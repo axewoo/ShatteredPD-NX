@@ -21,7 +21,7 @@ jobs:
       - name: Install build tools
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends openjdk-17-jdk-headless unzip rsync cmake ninja-build make curl git ca-certificates
+          apt-get install -y --no-install-recommends openjdk-17-jdk-headless unzip rsync cmake ninja-build make curl git python3 ca-certificates
           # The devkita64 image already ships most portlibs. Only talk to
           # pkg.devkitpro.org (which often answers 403 to CI) if something is missing.
           PL=$DEVKITPRO/portlibs/switch/lib

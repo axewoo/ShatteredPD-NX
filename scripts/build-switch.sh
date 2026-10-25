@@ -62,6 +62,25 @@ rm -rf "$TMP/x" && mkdir "$TMP/x"
 unzip -q -o "$SWITCHGDX_JAR" 'switchgdx/project/*' -d "$TMP/x"
 cp -r "$TMP/x/switchgdx/project/." "$DIST/"
 
+# Without an nxlink host, send stdout/stderr (uncaught Java exceptions, Gdx logs)
+# to ShatteredPD.log next to the NRO so crashes can be diagnosed on hardware.
+python3 - "$DIST/src/switchgdx/SwitchGDX.cpp" <<'PY'
+import sys
+p = sys.argv[1]
+s = open(p).read()
+old = "    socketInitializeDefault();\n    nxlinkStdio();\n"
+new = ("    socketInitializeDefault();\n"
+       "    if (nxlinkStdio() < 0) {\n"
+       "        freopen(\"ShatteredPD.log\", \"w\", stdout);\n"
+       "        freopen(\"ShatteredPD.log\", \"a\", stderr);\n"
+       "        setvbuf(stdout, nullptr, _IONBF, 0);\n"
+       "        setvbuf(stderr, nullptr, _IONBF, 0);\n"
+       "    }\n")
+if old not in s:
+    sys.exit("SwitchGDX.cpp: userAppInit pattern not found")
+open(p, "w").write(s.replace(old, new, 1))
+PY
+
 # Newer devkitPro freetype pulls in harfbuzz (and friends): take the static
 # link line from pkg-config, and group the libs so link order doesn't matter.
 PKGCONF="$DEVKITPRO/portlibs/switch/bin/aarch64-none-elf-pkg-config"

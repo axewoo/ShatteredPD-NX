@@ -8,7 +8,7 @@ Nintendo Switch Homebrew port is done using [SwitchGDX](https://github.com/TheLo
 ### Switch build (this fork)
 - Download `ShatteredPD.nro` from the latest release, copy it to `/switch/` on the SD card and launch it from hbmenu (hold R on a game for full RAM).
 - CI builds the NRO on every push; tag `v*` to publish a release.
-- Local build: install devkitPro plus the packages listed in `scripts/build-switch.sh`, a JDK 17+, `unzip`, `rsync`, `cmake` and `ninja`, then run `sudo -E bash scripts/build-libffi.sh` once and `bash scripts/build-switch.sh`.
+- Local build: install devkitPro plus the packages listed in `scripts/build-switch.sh`, a JDK 17+, `unzip`, `rsync`, `python3`, `cmake` and `ninja`, then run `sudo -E bash scripts/build-libffi.sh` once and `bash scripts/build-switch.sh`.
 You can find official releases of the game on:
 
 [![Get it on Google Play](https://shatteredpixel.com/assets/images/badges/gplay.png)](https://play.google.com/store/apps/details?id=com.shatteredpixel.shatteredpixeldungeon)
