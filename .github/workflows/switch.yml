@@ -48,6 +48,14 @@ jobs:
             build/clearwing-*
           key: gradle-${{ hashFiles('**/*.gradle', 'gradle/wrapper/gradle-wrapper.properties') }}
 
+      # Restore/save separately so objects are kept even when the link fails
+      - name: Restore C++ objects
+        uses: actions/cache/restore@v6
+        with:
+          path: build/ShatteredPD
+          key: switch-objs-${{ github.sha }}-${{ github.run_attempt }}
+          restore-keys: switch-objs-
+
       - name: Build libffi for Switch
         run: bash scripts/build-libffi.sh
 
@@ -55,6 +63,13 @@ jobs:
         env:
           JOBS: "4"
         run: bash scripts/build-switch.sh
+
+      - name: Save C++ objects
+        if: always()
+        uses: actions/cache/save@v6
+        with:
+          path: build/ShatteredPD
+          key: switch-objs-${{ github.sha }}-${{ github.run_attempt }}
 
       - name: Rename NRO
         run: cp build/ShatteredPD/build-switch/ShatteredPD.nro ShatteredPD.nro

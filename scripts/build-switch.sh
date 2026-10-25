@@ -62,6 +62,18 @@ rm -rf "$TMP/x" && mkdir "$TMP/x"
 unzip -q -o "$SWITCHGDX_JAR" 'switchgdx/project/*' -d "$TMP/x"
 cp -r "$TMP/x/switchgdx/project/." "$DIST/"
 
+# Newer devkitPro freetype pulls in harfbuzz (and friends): take the static
+# link line from pkg-config, and group the libs so link order doesn't matter.
+PKGCONF="$DEVKITPRO/portlibs/switch/bin/aarch64-none-elf-pkg-config"
+FT_LIBS="$("$PKGCONF" --static --libs freetype2 2>/dev/null || echo -lfreetype)"
+echo "freetype link flags: $FT_LIBS"
+sed -i \
+    -e "s|-lglad |-Wl,--start-group -lglad |" \
+    -e "s|-lfreetype|$FT_LIBS|" \
+    -e "s|-lstdc++ -lm)|-lstdc++ -lm -Wl,--end-group)|" \
+    "$DIST/switch.cmake"
+grep -n "start-group" "$DIST/switch.cmake" >/dev/null || { echo "switch.cmake patch failed"; exit 1; }
+
 cp -r "$ROOT/core/src/main/assets/." "$DIST/romfs/"
 cp -r "$ROOT/desktop/src/main/assets/." "$DIST/romfs/"
 cp "$ROOT/switch/icon.jpg" "$DIST/icon.jpg"
