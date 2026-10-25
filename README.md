@@ -7,6 +7,8 @@ Nintendo Switch Homebrew port is done using [SwitchGDX](https://github.com/TheLo
 
 ### Switch build (this fork)
 - Download `ShatteredPD.nro` from the latest release, copy it to `/switch/` on the SD card and launch it from hbmenu (hold R on a game for full RAM).
+- Controls: A attack, B pick up/wait, X examine, Y inventory, D-pad + L/R quick slots 1-6, ZL/ZR zoom, L3 rest, R3 resume, + menu, - journal. Touch works everywhere; rebind in Settings > Input. Quit with HOME.
+- If something goes wrong, `ShatteredPD.log` next to the NRO has the error.
 - CI builds the NRO on every push; tag `v*` to publish a release.
 - Local build: install devkitPro plus the packages listed in `scripts/build-switch.sh`, a JDK 17+, `unzip`, `rsync`, `python3`, `cmake` and `ninja`, then run `sudo -E bash scripts/build-libffi.sh` once and `bash scripts/build-switch.sh`.
 You can find official releases of the game on:

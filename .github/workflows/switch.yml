@@ -71,16 +71,6 @@ jobs:
           path: build/ShatteredPD
           key: switch-objs-${{ github.sha }}-${{ github.run_attempt }}
 
-      - name: Symbolize crash addresses
-        if: hashFiles('debug/crash-addrs.txt') != ''
-        run: |
-          ELF=$(ls build/ShatteredPD/build-switch/ShatteredPD.elf build/ShatteredPD/build-switch/ShatteredPD 2>/dev/null | head -1)
-          echo "ELF: $ELF"
-          grep -v '^#' debug/crash-addrs.txt | grep . | while read -r a; do
-            echo "== $a"
-            $DEVKITPRO/devkitA64/bin/aarch64-none-elf-addr2line -f -C -i -e "$ELF" "$a"
-          done
-
       - name: Rename NRO
         run: cp build/ShatteredPD/build-switch/ShatteredPD.nro ShatteredPD.nro
 
