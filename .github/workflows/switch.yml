@@ -22,10 +22,18 @@ jobs:
         run: |
           apt-get update
           apt-get install -y --no-install-recommends openjdk-17-jdk-headless unzip rsync cmake ninja-build git ca-certificates
-          # pkg.devkitpro.org sometimes answers 403 for a while; retry with backoff
+          # The devkita64 image already ships most portlibs. Only talk to
+          # pkg.devkitpro.org (which often answers 403 to CI) if something is missing.
+          PL=$DEVKITPRO/portlibs/switch/lib
+          missing=0
+          for lib in libSDL2.a libSDL2_mixer.a libfreetype.a libglad.a libcurl.a libzzip.a \
+                     libvorbisidec.a libEGL.a libglapi.a libdrm_nouveau.a libz.a; do
+            [ -f "$PL/$lib" ] || { echo "missing $lib"; missing=1; }
+          done
+          [ $missing = 0 ] && exit 0
           for delay in 0 15 30 60 120; do
             sleep $delay
-            dkp-pacman -Syu --noconfirm --needed switch-dev switch-cmake switch-pkg-config \
+            dkp-pacman -Sy --noconfirm --needed switch-dev switch-cmake switch-pkg-config \
               switch-zlib switch-libvorbis switch-zziplib switch-sdl2 switch-sdl2_mixer \
               switch-freetype switch-glad switch-curl switch-mesa switch-libdrm_nouveau && exit 0
           done
