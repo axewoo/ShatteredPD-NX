@@ -12,6 +12,7 @@
         "com.shatteredpixel.shatteredpixeldungeon.levels.**",
         "com.shatteredpixel.shatteredpixeldungeon.plants.**",
         "com.shatteredpixel.shatteredpixeldungeon.journal.**",
+        "com.shatteredpixel.shatteredpixeldungeon.tiles.**",
         "com.shatteredpixel.shatteredpixeldungeon.Rankings$Record"
     ]
 }

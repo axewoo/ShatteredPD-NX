@@ -58,7 +58,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-import java.security.SecureRandom;
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -75,7 +75,7 @@ abstract public class MissileWeapon extends Weapon {
 	}
 
 	//TODO maybe make this like actor IDs, instead of random? collisions unlikely, but it's messy
-	public long setID = new SecureRandom().nextLong();
+	public long setID = new Random(System.nanoTime() ^ System.identityHashCode(this)).nextLong();
 
 	//whether or not this instance of the item exists purely to trigger its effect. i.e. no dropping
 	public boolean spawnedForEffect = false;
