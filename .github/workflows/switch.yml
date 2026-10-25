@@ -22,9 +22,14 @@ jobs:
         run: |
           apt-get update
           apt-get install -y --no-install-recommends openjdk-17-jdk-headless unzip rsync cmake ninja-build git ca-certificates
-          dkp-pacman -Syu --noconfirm --needed switch-dev switch-cmake switch-pkg-config \
-            switch-zlib switch-libvorbis switch-zziplib switch-sdl2 switch-sdl2_mixer \
-            switch-freetype switch-glad switch-curl switch-mesa switch-libdrm_nouveau
+          # pkg.devkitpro.org sometimes answers 403 for a while; retry with backoff
+          for delay in 0 15 30 60 120; do
+            sleep $delay
+            dkp-pacman -Syu --noconfirm --needed switch-dev switch-cmake switch-pkg-config \
+              switch-zlib switch-libvorbis switch-zziplib switch-sdl2 switch-sdl2_mixer \
+              switch-freetype switch-glad switch-curl switch-mesa switch-libdrm_nouveau && exit 0
+          done
+          exit 1
 
       - name: Cache Gradle
         uses: actions/cache@v6
