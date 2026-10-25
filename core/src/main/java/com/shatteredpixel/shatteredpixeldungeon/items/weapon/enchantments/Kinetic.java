@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,6 @@ public class Kinetic extends Weapon.Enchantment {
 		int conservedDamage = 0;
 		if (attacker.buff(ConservedDamage.class) != null) {
 			conservedDamage = attacker.buff(ConservedDamage.class).damageBonus();
-			attacker.buff(ConservedDamage.class).detach();
 		}
 
 		//use a tracker so that we can know the true final damage
@@ -114,6 +113,10 @@ public class Kinetic extends Weapon.Enchantment {
 			
 			spend(TICK);
 			return true;
+		}
+
+		public void delay( float value ){
+			spend(value);
 		}
 		
 		@Override

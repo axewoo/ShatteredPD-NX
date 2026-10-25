@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,14 +55,14 @@ public class GhoulSprite extends MobSprite {
 
 	public void crumple(){
 		hideEmo();
-		remove(State.PARALYSED);
+		processStateRemoval(State.PARALYSED);
 		play(crumple);
 	}
 
 	@Override
 	public void die() {
 		if (curAnim == crumple){
-			//causes the sprite to not rise then fall again when dieing.
+			//causes the sprite to not rise then fall again when dying.
 			die.frames[0] = die.frames[1] = die.frames[2] = die.frames[3];
 		}
 		super.die();

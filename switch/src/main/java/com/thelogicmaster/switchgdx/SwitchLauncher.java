@@ -12,8 +12,8 @@ import com.watabou.utils.FileUtils;
 public class SwitchLauncher {
 
 	public static void main (String[] arg) {
-		Game.version = "1.4.3";
-		Game.versionCode = 668;
+		Game.version = "4.0.2";
+		Game.versionCode = 922;
 
 //		if (UpdateImpl.supportsUpdates()){
 //			Updates.service = UpdateImpl.getUpdateService();

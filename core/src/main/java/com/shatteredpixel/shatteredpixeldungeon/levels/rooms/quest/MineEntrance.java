@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,11 +78,14 @@ public class MineEntrance extends CaveRoom {
 					valid = true;
 				}
 			}
+			if (height() == 7 && width() == 7){
+				valid = true;
+			}
 		} while (level.findMob(entrance) != null || !valid);
-		Painter.set( level, entrance, Terrain.ENTRANCE );
+		Painter.set( level, entrance, Terrain.ENTRANCE_SP );
 
 		for (int i : PathFinder.NEIGHBOURS8){
-			Painter.set( level, entrance+i, Terrain.EMPTY );
+			Painter.set( level, entrance+i, Terrain.EMPTY_SP );
 		}
 
 		QuestExit vis = new QuestExit();
@@ -154,7 +157,7 @@ public class MineEntrance extends CaveRoom {
 			tileW = tileH = 3;
 		}
 
-		final int TEX_WIDTH = 128;
+		final int TEX_WIDTH = 64;
 
 		@Override
 		public Tilemap create() {

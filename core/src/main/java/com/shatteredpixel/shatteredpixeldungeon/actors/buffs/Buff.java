@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 
 import java.util.HashSet;
@@ -33,6 +34,9 @@ import java.util.HashSet;
 public class Buff extends Actor {
 	
 	public Char target;
+
+	//whether this buff was already extended by the mnemonic prayer spell
+	public boolean mnemonicExtended = false;
 
 	{
 		actPriority = BUFF_PRIO; //low priority, towards the end of a turn
@@ -45,7 +49,7 @@ public class Buff extends Actor {
 	//whether or not the buff announces its name
 	public boolean announced = false;
 
-	//whether a buff should persist through revive effects for the hero
+	//whether a buff should persist through revive effects or similar (e.g. transmogrify)
 	public boolean revivePersists = false;
 	
 	protected HashSet<Class> resistances = new HashSet<>();
@@ -138,6 +142,22 @@ public class Buff extends Actor {
 		return cooldown()+1f;
 	}
 
+	private static final String MNEMONIC_EXTENDED    = "mnemonic_extended";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		if (mnemonicExtended) bundle.put(MNEMONIC_EXTENDED, mnemonicExtended);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		if (bundle.contains(MNEMONIC_EXTENDED)) {
+			mnemonicExtended = bundle.getBoolean(MNEMONIC_EXTENDED);
+		}
+	}
+
 	//creates a fresh instance of the buff and attaches that, this allows duplication.
 	public static<T extends Buff> T append( Char target, Class<T> buffClass ) {
 		T buff = Reflection.newInstance(buffClass);
@@ -184,5 +204,11 @@ public class Buff extends Actor {
 		for ( Buff b : target.buffs( cl )){
 			b.detach();
 		}
+	}
+
+	//Buffs which declare their total incoming damage over time (even an average)
+	// This is used in health bar visuals to show total incoming damage
+	public interface DOTbuff {
+		int totalIncomingDMG();
 	}
 }

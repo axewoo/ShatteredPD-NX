@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,22 +40,28 @@ public class DM200Sprite extends MobSprite {
 
 		TextureFilm frames = new TextureFilm( texture, 21, 18 );
 
+		int c = texOffset();
+
 		idle = new Animation( 10, true );
-		idle.frames( frames, 0, 1 );
+		idle.frames( frames, c+0, c+1 );
 
 		run = new Animation( 10, true );
-		run.frames( frames, 2, 3 );
+		run.frames( frames, c+2, c+3 );
 
 		attack = new Animation( 15, false );
-		attack.frames( frames, 4, 5, 6 );
+		attack.frames( frames, c+4, c+5, c+6 );
 
 		zap = new Animation( 15, false );
-		zap.frames( frames, 7, 8, 8, 7 );
+		zap.frames( frames, c+7, c+8, c+8, c+7 );
 
 		die = new Animation( 8, false );
-		die.frames( frames, 9, 10, 11 );
+		die.frames( frames, c+9, c+10, c+11 );
 
 		play( idle );
+	}
+
+	protected int texOffset(){
+		return 0;
 	}
 
 	public void zap( int cell ) {
@@ -69,7 +75,7 @@ public class DM200Sprite extends MobSprite {
 				new Callback() {
 					@Override
 					public void call() {
-						((DM200)ch).onZapComplete();
+						((DM200) ch).onZapComplete();
 					}
 				} );
 		Sample.INSTANCE.play( Assets.Sounds.GAS );
@@ -99,6 +105,14 @@ public class DM200Sprite extends MobSprite {
 	@Override
 	public int blood() {
 		return 0xFFFFFF88;
+	}
+
+	public static class Vault extends DM200Sprite {
+
+		@Override
+		protected int texOffset() {
+			return 24;
+		}
 	}
 
 }

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,9 +59,11 @@ public class BlobEmitter extends Emitter {
 		for (int i = blob.area.left; i < blob.area.right; i++) {
 			for (int j = blob.area.top; j < blob.area.bottom; j++) {
 				cell = i + j*Dungeon.level.width();
-				if (cell < Dungeon.level.heroFOV.length
-						&& (Dungeon.level.heroFOV[cell] || blob.alwaysVisible)
-						&& map[cell] > 0) {
+				boolean visible = cell < Dungeon.level.heroFOV.length && Dungeon.level.heroFOV[cell];
+				if (blob.alwaysVisible && cell < Dungeon.level.length()) {
+					visible = visible || Dungeon.level.mapped[cell] || Dungeon.level.visited[cell];
+				}
+				if (visible && map[cell] > 0) {
 					float x = (i + Random.Float(bound.left, bound.right)) * size;
 					float y = (j + Random.Float(bound.top, bound.bottom)) * size;
 					factory.emit(this, index, x, y);

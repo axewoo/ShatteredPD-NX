@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.keys.CrystalKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.GoldenKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.SkeletonKey;
+import com.shatteredpixel.shatteredpixeldungeon.items.keys.WornKey;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Notes;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
@@ -57,7 +57,7 @@ public class KeyDisplay extends Visual {
 	//and the order they will be truncated if there is no space (higher first, larger counts first)
 	private static final LinkedHashMap<Class<? extends Key>, Integer> keyMap = new LinkedHashMap<>();
 	static {
-		keyMap.put(SkeletonKey.class, 1);
+		keyMap.put(WornKey.class, 1);
 		keyMap.put(CrystalKey.class, 2);
 		keyMap.put(GoldenKey.class, 3);
 		keyMap.put(IronKey.class, 4);
@@ -76,7 +76,7 @@ public class KeyDisplay extends Visual {
 			if (rec.depth() < Dungeon.depth){
 				//only ever 1 black key
 				keys[0] = 1;
-			} else if (rec.depth() == Dungeon.depth){
+			} else if (rec.depth() == Dungeon.depth && Dungeon.branch == 0){
 				keys[keyMap.get(rec.type())] += rec.quantity();
 			}
 		}

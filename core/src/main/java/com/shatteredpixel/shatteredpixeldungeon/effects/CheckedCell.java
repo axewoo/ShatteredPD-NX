@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,22 +32,23 @@ public class CheckedCell extends Image {
 	private float alpha;
 	private float delay;
 	
-	public CheckedCell( int pos ) {
+	public CheckedCell() {
 		super( TextureCache.createSolid( 0xFF55AAFF ) );
-
-		origin.set( 0.5f );
-		
-		point( DungeonTilemap.tileToWorld( pos ).offset(
-			DungeonTilemap.SIZE / 2,
-			DungeonTilemap.SIZE / 2 ) );
-		
-		alpha = 0.8f;
 	}
 
-	public CheckedCell( int pos, int visSource ) {
-		this( pos );
+	public void reset( int pos, int visSource ){
+		revive();
+		origin.set( 0.5f );
+
+		point( DungeonTilemap.tileToWorld( pos ).offset(
+				DungeonTilemap.SIZE / 2,
+				DungeonTilemap.SIZE / 2 ) );
+
+		alpha = 0.8f;
+		scale.set( DungeonTilemap.SIZE * alpha );
+
 		delay = (Dungeon.level.trueDistance(pos, visSource)-1f);
-		//steadily accelerates as distance increases
+		//delay steadily accelerates as distance increases
 		if (delay > 0) {
 			delay = (float)Math.pow(delay, 0.67f)/10f;
 			alpha( 0 );
@@ -62,7 +63,7 @@ public class CheckedCell extends Image {
 			alpha( alpha );
 			scale.set( DungeonTilemap.SIZE * alpha );
 		} else {
-			killAndErase();
+			kill();
 		}
 	}
 }

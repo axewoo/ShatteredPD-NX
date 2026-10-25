@@ -1,0 +1,87 @@
+name: Switch build
+
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  nro:
+    name: Nintendo Switch NRO
+    runs-on: ubuntu-24.04
+    container: devkitpro/devkita64:latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install build tools
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends openjdk-17-jdk-headless unzip rsync cmake ninja-build make curl git python3 ca-certificates
+          # The devkita64 image already ships most portlibs. Only talk to
+          # pkg.devkitpro.org (which often answers 403 to CI) if something is missing.
+          PL=$DEVKITPRO/portlibs/switch/lib
+          missing=0
+          for lib in libSDL2.a libSDL2_mixer.a libfreetype.a libglad.a libcurl.a libzzip.a \
+                     libvorbisidec.a libEGL.a libglapi.a libdrm_nouveau.a libz.a; do
+            [ -f "$PL/$lib" ] || { echo "missing $lib"; missing=1; }
+          done
+          [ $missing = 0 ] && exit 0
+          for delay in 0 15 30 60 120; do
+            sleep $delay
+            dkp-pacman -Sy --noconfirm --needed switch-dev switch-cmake switch-pkg-config \
+              switch-zlib switch-libvorbis switch-zziplib switch-sdl2 switch-sdl2_mixer \
+              switch-freetype switch-glad switch-curl switch-mesa switch-libdrm_nouveau && exit 0
+          done
+          exit 1
+
+      - name: Cache Gradle
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            build/clearwing-*
+          key: gradle-${{ hashFiles('**/*.gradle', 'gradle/wrapper/gradle-wrapper.properties') }}
+
+      # Restore/save separately so objects are kept even when the link fails
+      - name: Restore C++ objects
+        uses: actions/cache/restore@v6
+        with:
+          path: build/ShatteredPD
+          key: switch-objs-${{ github.sha }}-${{ github.run_attempt }}
+          restore-keys: switch-objs-
+
+      - name: Build libffi for Switch
+        run: bash scripts/build-libffi.sh
+
+      - name: Build
+        env:
+          JOBS: "4"
+        run: bash scripts/build-switch.sh
+
+      - name: Save C++ objects
+        if: always()
+        uses: actions/cache/save@v6
+        with:
+          path: build/ShatteredPD
+          key: switch-objs-${{ github.sha }}-${{ github.run_attempt }}
+
+      - name: Rename NRO
+        run: cp build/ShatteredPD/build-switch/ShatteredPD.nro ShatteredPD.nro
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ShatteredPD-nro
+          path: ShatteredPD.nro
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v3
+        with:
+          files: ShatteredPD.nro
+          generate_release_notes: true

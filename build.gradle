@@ -2,15 +2,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri("https://storage.googleapis.com/r8-releases/raw")
-        }
     }
     dependencies {
-        //gradle version packaged with AGP 8.5 causes crashes on Android 4.4-
-        //this won't be needed once the bundled version is 8.7.2+
-        classpath 'com.android.tools:r8:8.7.4-dev'
-        classpath 'com.android.tools.build:gradle:8.5.1'
+        classpath 'com.android.tools.build:gradle:9.2.0'
     }
 }
 
@@ -20,28 +14,29 @@ allprojects {
         appName = 'Shattered Pixel Dungeon'
         appPackageName = 'com.shatteredpixel.shatteredpixeldungeon'
 
-        appVersionCode = 797
-        appVersionName = '2.5.2'
+        //Full releases gets +2 on version code, needed for an F-Droid quirk
+        appVersionCode = 922
+        appVersionName = '4.0.2'
 
-        appJavaCompatibility = JavaVersion.VERSION_1_8
+        appJavaCompatibility = JavaVersion.VERSION_11
 
-        appAndroidCompileSDK = 33 //compile SDK is still 33 atm as we're sticking with AGP 8.0.2
-        appAndroidMinSDK = 14
-        appAndroidTargetSDK = 34
+        appAndroidCompileSDK = 36   //Android 15
+        appAndroidMinSDK = 21       //Android 5.0
+        appAndroidTargetSDK = 36    //Android 15
 
         gdxVersion = '1.13.1'
-        gdxControllersVersion = '2.2.4-SNAPSHOT'
-        robovmVersion = '2.3.21'
+        gdxControllersVersion = '2.2.4'
+        robovmVersion = '2.3.24'
 
-        clearwingVersion = '3.0.3'
-        switchGdxVersion = '3.0.1'
+        clearwingVersion = '3.1.2'
+        switchGdxVersion = '3.0.2'
     }
     version = appVersionName
 
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://central.sonatype.com/repository/maven-snapshots/' }
     }
 
 }

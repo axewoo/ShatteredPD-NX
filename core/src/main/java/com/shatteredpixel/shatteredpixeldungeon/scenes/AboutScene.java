@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.scenes;
 
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
+import com.shatteredpixel.shatteredpixeldungeon.ui.TitleBackground;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
@@ -36,6 +36,7 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.RectF;
 
 public class AboutScene extends PixelScene {
 
@@ -43,18 +44,19 @@ public class AboutScene extends PixelScene {
 	public void create() {
 		super.create();
 
-		final float colWidth = 120;
+		final float colWidth = landscape() ? 120 : 130;
 		final float fullWidth = colWidth * (landscape() ? 2 : 1);
 
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 
-		Archs archs = new Archs();
-		archs.setSize( w, h );
-		add( archs );
+		RectF insets = getCommonInsets();
+
+		TitleBackground BG = new TitleBackground( w, h );
+		add( BG );
 
 		//darkens the arches
-		add(new ColorBlock(w, h, 0x88000000));
+		add(new ColorBlock(w, h, 0x44000000));
 
 		ScrollPane list = new ScrollPane( new Component() );
 		add( list );
@@ -71,43 +73,63 @@ public class AboutScene extends PixelScene {
 				"ShatteredPixel.com",
 				"https://ShatteredPixel.com");
 		if (landscape()){
-			shpx.setRect((w - fullWidth)/2f - 6, 10, 120, 0);
+			shpx.setRect((w - fullWidth)/2f - 6, insets.top + 26, 120, 0);
 		} else {
-			shpx.setRect((w - fullWidth)/2f, 6, 120, 0);
+			shpx.setRect((w - fullWidth)/2f, insets.top + 6, 120, 0);
 		}
 		content.add(shpx);
 
-		CreditsBlock alex = new CreditsBlock(false, Window.SHPX_COLOR,
-				"Splash Art & Design:",
+		CreditsBlock aleks = new CreditsBlock(false, Window.SHPX_COLOR,
+				"Splash & Dungeon Art:",
 				Icons.ALEKS.get(),
 				"Aleksandar Komitov",
-				"akomitov.artstation.com",
-				"https://akomitov.artstation.com/");
-		alex.setSize(colWidth/2f, 0);
+				"alekskomitov.com",
+				"https://www.alekskomitov.com/");
+		aleks.setSize(colWidth/2f, 0);
 		if (landscape()){
-			alex.setPos(shpx.right(), shpx.top() + (shpx.height() - alex.height()*2)/2f);
+			aleks.setPos(shpx.right(), insets.top+6);
 		} else {
-			alex.setPos(w/2f - colWidth/2f, shpx.bottom()+5);
+			aleks.setPos(w/2f - colWidth/2f, shpx.bottom()+6);
 		}
-		content.add(alex);
+		content.add(aleks);
 
-		CreditsBlock charlie = new CreditsBlock(false, Window.SHPX_COLOR,
+		CreditsBlock lumine = new CreditsBlock(false, Window.SHPX_COLOR,
+				"Composer:",
+				Icons.LUMINE.get(),
+				"Lumine Haaristo",
+				"youtube.com/@Lumine...",
+				"https://www.youtube.com/@LumineThomasHaaristo");
+		lumine.setRect(aleks.right(), aleks.top(), colWidth/2f, 0);
+		content.add(lumine);
+
+		CreditsBlock pumpkin = new CreditsBlock(false, Window.SHPX_COLOR,
+				"Item Pixel Art:",
+				Icons.PUMPKINVOLT.get(),
+				"PumpkinVolt",
+				null,
+				null);
+		pumpkin.setSize(colWidth/2f, 0);
+		pumpkin.setRect(aleks.left(), aleks.bottom()+6, colWidth/2f, 0);
+		content.add(pumpkin);
+
+		CreditsBlock celesti = new CreditsBlock(false, Window.SHPX_COLOR,
 				"Sound Effects:",
 				Icons.CELESTI.get(),
 				"Celesti",
-				"s9menine.itch.io",
-				"https://s9menine.itch.io");
-		charlie.setRect(alex.right(), alex.top(), colWidth/2f, 0);
-		content.add(charlie);
+				"celesti-whispers.itch.io",
+				"https://celesti-whispers.itch.io/");
+		celesti.setRect(pumpkin.right(), pumpkin.top(), colWidth/2f, 0);
+		content.add(celesti);
 
-		CreditsBlock kristjan = new CreditsBlock(false, Window.SHPX_COLOR,
-				"Music:",
-				Icons.KRISTJAN.get(),
-				"Kristjan Haaristo",
-				"youtube.com/@kristjan...",
-				"https://www.youtube.com/@kristjanthomashaaristo");
-		kristjan.setRect(alex.right() - colWidth/4f, alex.bottom() + 5, colWidth/2f, 0);
-		content.add(kristjan);
+		CreditsBlock alastair = new CreditsBlock(false, Window.SHPX_COLOR,
+				"Additional Pixel Art:",
+				Icons.ALASTAIR.get(),
+				"Alastair Braun",
+				null,
+				null);
+		alastair.setSize(colWidth/2f, 0);
+		alastair.setRect(pumpkin.left(), celesti.bottom()+6, colWidth/2f, 0);
+		content.add(alastair);
 
 		//*** Pixel Dungeon Credits ***
 
@@ -119,9 +141,9 @@ public class AboutScene extends PixelScene {
 				"watabou.itch.io",
 				"https://watabou.itch.io/");
 		if (landscape()){
-			wata.setRect(shpx.left(), kristjan.bottom() + 8, colWidth, 0);
+			wata.setRect(shpx.left(), alastair.bottom() + 8, colWidth, 0);
 		} else {
-			wata.setRect(shpx.left(), kristjan.bottom() + 8, colWidth, 0);
+			wata.setRect(shpx.left(), alastair.bottom() + 8, colWidth, 0);
 		}
 		content.add(wata);
 
@@ -137,7 +159,7 @@ public class AboutScene extends PixelScene {
 		if (landscape()){
 			cube.setPos(wata.right() + colWidth/4f, wata.top() + (wata.height() - cube.height())/2f);
 		} else {
-			cube.setPos(alex.left() + colWidth/4f, wata.bottom()+5);
+			cube.setPos(aleks.left() + colWidth/4f, wata.bottom()+6);
 		}
 		content.add(cube);
 
@@ -187,7 +209,7 @@ public class AboutScene extends PixelScene {
 		if (landscape()){
 			arcnor.setPos(gdx.right(), gdx.top() + (gdx.height() - arcnor.height())/2f);
 		} else {
-			arcnor.setPos(alex.left(), gdx.bottom()+5);
+			arcnor.setPos(aleks.left(), gdx.bottom()+6);
 		}
 		content.add(arcnor);
 
@@ -244,18 +266,19 @@ public class AboutScene extends PixelScene {
 				"_Sheep bleating_ by _zachrau_\n" +
 				"_Lemon,Juicy,Squeeze,Fruit.wav_ by _Filipe Chagas_\n" +
 				"_Lemon,Squeeze,Squishy,Fruit.wav_ by _Filipe Chagas_",
-				"www.freesound.org",
+				"freesound.org",
 				"https://www.freesound.org");
 		freesound.setRect(transifex.left()-10, transifex.bottom() + 8, colWidth+20, 0);
 		content.add(freesound);
 
-		content.setSize( fullWidth, freesound.bottom()+10 );
+		content.setSize( fullWidth, freesound.bottom()+10 + insets.bottom );
 
 		list.setRect( 0, 0, w, h );
 		list.scrollTo(0, 0);
 
 		ExitButton btnExit = new ExitButton();
-		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
+		int ofs = PixelScene.landscape() ? 0 : 4;
+		btnExit.setPos( Camera.main.width - btnExit.width() - ofs, ofs );
 		add( btnExit );
 
 		//fadeIn();

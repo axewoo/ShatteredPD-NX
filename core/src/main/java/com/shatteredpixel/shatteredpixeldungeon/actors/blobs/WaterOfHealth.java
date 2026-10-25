@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,8 +60,7 @@ public class WaterOfHealth extends WellWater {
 
 		if (VialOfBlood.delayBurstHealing()){
 			Healing healing = Buff.affect(hero, Healing.class);
-			healing.setHeal(hero.HT, 0, VialOfBlood.maxHealPerTurn());
-			healing.applyVialEffect();
+			healing.setHeal(hero.HT, 0, VialOfBlood.maxHealPerTurn(), true);
 		} else {
 			hero.HP = hero.HT;
 			hero.sprite.emitter().start(Speck.factory(Speck.HEALING), 0.4f, 4);

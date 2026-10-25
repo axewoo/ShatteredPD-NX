@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ public class Blooming extends Weapon.Enchantment {
 
 			float powerMulti = Math.max(1f, procChance);
 
-			float plants = (1f + 0.1f*level) * powerMulti;
+			float plants = (1.5f + 0.1f*level) * powerMulti;
 			if (Random.Float() < plants%1){
 				plants = (float)Math.ceil(plants);
 			} else {

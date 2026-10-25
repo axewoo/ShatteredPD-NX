@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,26 +76,36 @@ public class CursingTrap extends Trap {
 
 		KindOfWeapon weapon = hero.belongings.weapon();
 		if (weapon instanceof Weapon && !(weapon instanceof MagesStaff)){
-			if (((Weapon) weapon).enchantment == null)
+			if (((Weapon) weapon).enchantment == null) {
 				priorityCurse.add(weapon);
-			else
+			} else {
 				canCurse.add(weapon);
+			}
+		}
+
+		weapon = hero.belongings.secondWep();
+		if (weapon instanceof Weapon && !(weapon instanceof MagesStaff)){
+			if (((Weapon) weapon).enchantment == null) {
+				priorityCurse.add(weapon);
+			} else {
+				canCurse.add(weapon);
+			}
 		}
 
 		Armor armor = hero.belongings.armor();
 		if (armor != null){
-			if (armor.glyph == null)
+			if (armor.glyph == null) {
 				priorityCurse.add(armor);
-			else
+			} else {
 				canCurse.add(armor);
+			}
 		}
 
-		Collections.shuffle(priorityCurse);
-		Collections.shuffle(canCurse);
-
 		if (!priorityCurse.isEmpty()){
+			Collections.shuffle(priorityCurse);
 			curse(priorityCurse.remove(0));
 		} else if (!canCurse.isEmpty()){
+			Collections.shuffle(canCurse);
 			curse(canCurse.remove(0));
 		}
 
@@ -118,5 +128,6 @@ public class CursingTrap extends Trap {
 				a.inscribe(Armor.Glyph.randomCurse());
 			}
 		}
+		Item.updateQuickslot();
 	}
 }

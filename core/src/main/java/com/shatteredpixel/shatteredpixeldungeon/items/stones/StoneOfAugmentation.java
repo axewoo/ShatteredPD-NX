@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.items.stones;
 
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
@@ -61,8 +62,11 @@ public class StoneOfAugmentation extends InventoryStone {
 		weapon.augment = augment;
 		useAnimation();
 		ScrollOfUpgrade.upgrade(curUser);
-		curItem.detach( curUser.belongings.backpack );
-		Catalog.countUse(getClass());
+		if (!anonymous) {
+			curItem.detach(curUser.belongings.backpack);
+			Catalog.countUse(getClass());
+			Talent.onRunestoneUsed(curUser, curUser.pos, getClass());
+		}
 	}
 	
 	public void apply( Armor armor, Armor.Augment augment ) {
@@ -70,8 +74,11 @@ public class StoneOfAugmentation extends InventoryStone {
 		armor.augment = augment;
 		useAnimation();
 		ScrollOfUpgrade.upgrade(curUser);
-		curItem.detach( curUser.belongings.backpack );
-		Catalog.countUse(getClass());
+		if (!anonymous) {
+			curItem.detach(curUser.belongings.backpack);
+			Catalog.countUse(getClass());
+			Talent.onRunestoneUsed(curUser, curUser.pos, getClass());
+		}
 	}
 	
 	@Override
@@ -89,7 +96,7 @@ public class StoneOfAugmentation extends InventoryStone {
 		private static final int WIDTH			= 120;
 		private static final int MARGIN 		= 2;
 		private static final int BUTTON_WIDTH	= WIDTH - MARGIN * 2;
-		private static final int BUTTON_HEIGHT	= 20;
+		private static final int BUTTON_HEIGHT	= 18;
 		
 		public WndAugment( final Item toAugment ) {
 			super();
@@ -97,45 +104,53 @@ public class StoneOfAugmentation extends InventoryStone {
 			IconTitle titlebar = new IconTitle( toAugment );
 			titlebar.setRect( 0, 0, WIDTH, 0 );
 			add( titlebar );
-			
-			RenderedTextBlock tfMesage = PixelScene.renderTextBlock( Messages.get(this, "choice"), 8 );
+
+			String msg = Messages.get(this, "choice");
+
+			if (toAugment instanceof Weapon && ((Weapon) toAugment).augment != Weapon.Augment.NONE){
+				msg += "\n\n" + Messages.get(this, "already");
+			} else if (toAugment instanceof Armor && ((Armor) toAugment).augment != Armor.Augment.NONE){
+				msg += "\n\n" + Messages.get(this, "already");
+			}
+
+			RenderedTextBlock tfMesage = PixelScene.renderTextBlock( msg, 6 );
 			tfMesage.maxWidth(WIDTH - MARGIN * 2);
 			tfMesage.setPos(MARGIN, titlebar.bottom() + MARGIN);
 			add( tfMesage );
 			
-			float pos = tfMesage.top() + tfMesage.height();
+			float pos = tfMesage.bottom() + MARGIN;
 			
 			if (toAugment instanceof Weapon){
 				for (final Weapon.Augment aug : Weapon.Augment.values()){
 					if (((Weapon) toAugment).augment != aug){
-						RedButton btnSpeed = new RedButton( Messages.get(this, aug.name()) ) {
+						RedButton btnAug = new RedButton( Messages.get(this, aug.name()) ) {
 							@Override
 							protected void onClick() {
 								hide();
 								StoneOfAugmentation.this.apply( (Weapon)toAugment, aug );
 							}
 						};
-						btnSpeed.setRect( MARGIN, pos + MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT );
-						add( btnSpeed );
+						btnAug.setRect( MARGIN, pos + MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT );
+						add( btnAug );
 						
-						pos = btnSpeed.bottom();
+						pos = btnAug.bottom();
 					}
 				}
 				
 			} else if (toAugment instanceof Armor){
 				for (final Armor.Augment aug : Armor.Augment.values()){
 					if (((Armor) toAugment).augment != aug){
-						RedButton btnSpeed = new RedButton( Messages.get(this, aug.name()) ) {
+						RedButton btnAug = new RedButton( Messages.get(this, aug.name()) ) {
 							@Override
 							protected void onClick() {
 								hide();
 								StoneOfAugmentation.this.apply( (Armor) toAugment, aug );
 							}
 						};
-						btnSpeed.setRect( MARGIN, pos + MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT );
-						add( btnSpeed );
+						btnAug.setRect( MARGIN, pos + MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT );
+						add( btnAug );
 						
-						pos = btnSpeed.bottom();
+						pos = btnAug.bottom();
 					}
 				}
 			}
@@ -144,7 +159,7 @@ public class StoneOfAugmentation extends InventoryStone {
 				@Override
 				protected void onClick() {
 					hide();
-					StoneOfAugmentation.this.collect();
+					activate(curUser.pos);
 				}
 			};
 			btnCancel.setRect( MARGIN, pos + MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT );
@@ -155,8 +170,8 @@ public class StoneOfAugmentation extends InventoryStone {
 		
 		@Override
 		public void onBackPressed() {
-			StoneOfAugmentation.this.collect();
 			super.onBackPressed();
+			activate(curUser.pos);
 		}
 	}
 }

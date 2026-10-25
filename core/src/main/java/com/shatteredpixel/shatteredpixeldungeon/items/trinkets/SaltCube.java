@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ public class SaltCube extends Trinket {
 
 	@Override
 	protected int upgradeEnergyCost() {
-		//6 -> 8(14) -> 10(24) -> 12(36)
+		//6 -> 6(12) -> 8(20) -> 10(30)
 		return 6+2*level();
 	}
 
@@ -46,8 +46,8 @@ public class SaltCube extends Trinket {
 		} else {
 			return Messages.get(this,
 					"typical_stats_desc",
-					Messages.decimalFormat("#.##", 100*((1f/hungerGainMultiplier(buffedLvl()))-1f)),
-					Messages.decimalFormat("#.##", 100*(1f-healthRegenMultiplier(buffedLvl()))));
+					Messages.decimalFormat("#.##", 100*((1f/hungerGainMultiplier(0))-1f)),
+					Messages.decimalFormat("#.##", 100*(1f-healthRegenMultiplier(0))));
 		}
 	}
 
@@ -72,13 +72,13 @@ public class SaltCube extends Trinket {
 			case -1: default:
 				return 1;
 			case 0:
-				return 0.8f;
+				return 0.84f;
 			case 1:
-				return 0.67f;
+				return 0.73f;
 			case 2:
-				return 0.57f;
+				return 0.66f;
 			case 3:
-				return 0.5f;
+				return 0.6f;
 		}
 	}
 

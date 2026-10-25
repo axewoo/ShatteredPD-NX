@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,11 +32,16 @@ import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Belongings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.items.EquipableItem;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.EscapeCrystal;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesGrid;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BadgesList;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Button;
@@ -56,6 +61,7 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.DeviceCompat;
 
 import java.text.NumberFormat;
@@ -190,7 +196,7 @@ public class WndRanking extends WndTabbed {
 
 			pos = date.bottom()+5;
 
-			NumberFormat num = NumberFormat.getInstance(Locale.US);
+			NumberFormat num = NumberFormat.getInstance(Messages.locale());
 
 			if (Dungeon.hero == null){
 				pos = statSlot( this, Messages.get(this, "score"), num.format( record.score ), pos );
@@ -295,13 +301,23 @@ public class WndRanking extends WndTabbed {
 		}
 		
 		private float statSlot( Group parent, String label, String value, float pos ) {
-			
-			RenderedTextBlock txt = PixelScene.renderTextBlock( label, 7 );
-			txt.setPos(0, pos);
+
+			int size = 7;
+			RenderedTextBlock txt;
+			do {
+				txt = PixelScene.renderTextBlock( label, size );
+				size--;
+			} while (txt.width() >= WIDTH * 0.55f);
+			txt.setPos(0, pos + (6 - txt.height())/2);
+			PixelScene.align(txt);
 			parent.add( txt );
-			
-			txt = PixelScene.renderTextBlock( value, 7 );
-			txt.setPos(WIDTH * 0.6f, pos);
+
+			size = 7;
+			do {
+				txt = PixelScene.renderTextBlock( value, size );
+				size--;
+			} while (txt.width() >= WIDTH * 0.45f);
+			txt.setPos(WIDTH * 0.55f, pos + (6 - txt.height())/2);
 			PixelScene.align(txt);
 			parent.add( txt );
 			
@@ -393,6 +409,21 @@ public class WndRanking extends WndTabbed {
 
 				}
 			}
+
+			EscapeCrystal crystal = Dungeon.hero.belongings.getItem(EscapeCrystal.class);
+			if (crystal != null){
+				IconButton vaultInv = new IconButton(new ItemSprite(ItemSpriteSheet.ESCAPE)){
+					@Override
+					protected void onClick() {
+						Bundle items = crystal.storedItems;
+						crystal.restoreHeroBelongings(Dungeon.hero, null);
+						crystal.storedItems = items; //want to preserve this
+						ShatteredPixelDungeon.scene().addToFront(new WndVaultItems());
+					}
+				};
+				vaultInv.setRect(width-16, 2, 16, 16);
+				add(vaultInv);
+			}
 		}
 		
 		private void addItem( Item item ) {
@@ -402,6 +433,16 @@ public class WndRanking extends WndTabbed {
 			
 			pos += slot.height() + 1;
 		}
+	}
+
+	private class WndVaultItems extends Window {
+
+		public WndVaultItems(){
+			resize(WIDTH, HEIGHT);
+
+			add(new ItemsTab());
+		}
+
 	}
 	
 	private class BadgesTab extends Group {
@@ -482,11 +523,17 @@ public class WndRanking extends WndTabbed {
 			
 			slot.item( item );
 			if (item.cursed && item.cursedKnown) {
-				bg.ra = +0.2f;
-				bg.ga = -0.1f;
+				bg.ra = +0.3f;
+				bg.ga = -0.15f;
+				bg.ba = -0.15f;
 			} else if (!item.isIdentified()) {
-				bg.ra = 0.1f;
-				bg.ba = 0.1f;
+				if ((item instanceof EquipableItem || item instanceof Wand) && item.cursedKnown){
+					bg.ba = +0.3f;
+					bg.ra = -0.1f;
+				} else {
+					bg.ra = +0.35f;
+					bg.ba = +0.35f;
+				}
 			}
 		}
 		

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import com.badlogic.gdx.Input;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 
@@ -154,27 +155,27 @@ public class SPDAction extends GameAction {
 
 	private static final LinkedHashMap<Integer, GameAction> defaultControllerBindings = new LinkedHashMap<>();
 	static {
+		//Switch port: touch handles menus and containers, so buttons map to direct actions
 		defaultControllerBindings.put( Input.Keys.BUTTON_START,     SPDAction.BACK );
 		defaultControllerBindings.put( Input.Keys.BUTTON_SELECT,    SPDAction.JOURNAL );
 
-		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        SPDAction.LEFT_CLICK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBR,    SPDAction.LEFT_CLICK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        SPDAction.RIGHT_CLICK );
-
-		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     SPDAction.TAG_ACTION );
-		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   SPDAction.TAG_LOOT );
-		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   SPDAction.TAG_RESUME );
-		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  SPDAction.CYCLE );
-
-		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    SPDAction.WAIT_OR_PICKUP );
-
-		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        SPDAction.ZOOM_IN );
-		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        SPDAction.ZOOM_OUT );
-
 		defaultControllerBindings.put( Input.Keys.BUTTON_A,         SPDAction.TAG_ATTACK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_B,         SPDAction.EXAMINE );
-		defaultControllerBindings.put( Input.Keys.BUTTON_X,         SPDAction.QUICKSLOT_SELECTOR );
-		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         SPDAction.INVENTORY_SELECTOR );
+		defaultControllerBindings.put( Input.Keys.BUTTON_B,         SPDAction.WAIT_OR_PICKUP );
+		defaultControllerBindings.put( Input.Keys.BUTTON_X,         SPDAction.EXAMINE );
+		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         SPDAction.INVENTORY );
+
+		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     SPDAction.QUICKSLOT_1 );
+		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  SPDAction.QUICKSLOT_2 );
+		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   SPDAction.QUICKSLOT_3 );
+		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   SPDAction.QUICKSLOT_4 );
+		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        SPDAction.QUICKSLOT_5 );
+		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        SPDAction.QUICKSLOT_6 );
+
+		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        SPDAction.ZOOM_OUT );
+		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        SPDAction.ZOOM_IN );
+
+		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    SPDAction.REST );
+		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBR,    SPDAction.TAG_RESUME );
 	}
 
 	public static LinkedHashMap<Integer, GameAction> getControllerDefaults() {
@@ -213,7 +214,7 @@ public class SPDAction extends GameAction {
 			LinkedHashMap<Integer, GameAction> merged = new LinkedHashMap<>();
 
 			for (GameAction a : allActions()) {
-				if (firstKeys.contains(a.name()) && !ControllerHandler.icControllerKey(firstKeys.getInt(a.name()))) {
+				if (firstKeys.contains(a.name()) && KeyEvent.isKeyboardKey(firstKeys.getInt(a.name()))) {
 					if (firstKeys.getInt(a.name()) == 0){
 						continue; //we have no keys assigned to this action, move to the next one
 					} else {
@@ -236,7 +237,7 @@ public class SPDAction extends GameAction {
 					}
 				}
 
-				if (secondKeys.contains(a.name()) && !ControllerHandler.icControllerKey(secondKeys.getInt(a.name()))) {
+				if (secondKeys.contains(a.name()) && KeyEvent.isKeyboardKey(secondKeys.getInt(a.name()))) {
 					if (secondKeys.getInt(a.name()) == 0){
 						continue; //we have no more keys assigned to this action, move to the next one
 					} else {
@@ -259,7 +260,7 @@ public class SPDAction extends GameAction {
 					}
 				}
 
-				if (thirdKeys.contains(a.name()) && !ControllerHandler.icControllerKey(thirdKeys.getInt(a.name()))) {
+				if (thirdKeys.contains(a.name()) && KeyEvent.isKeyboardKey(thirdKeys.getInt(a.name()))) {
 					if (thirdKeys.getInt(a.name()) == 0){
 						continue; //we have no more keys assigned to this action, move to the next one
 					} else {
