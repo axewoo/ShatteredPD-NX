@@ -12,6 +12,17 @@ cd "$ROOT"
 export DEVKITPRO
 JOBS="${JOBS:-$(nproc)}"
 VERSION="$(sed -n "s/^\s*appVersionName = '\(.*\)'/\1/p" build.gradle)"
+CLEARWING="$(sed -n "s/^\s*clearwingVersion = '\(.*\)'/\1/p" build.gradle)"
+
+# Clearwing transpiler: JitPack does not serve the 3.1.x builds, so build the
+# matching tag from source (its Gradle 7.4 wrapper needs a JDK 17, not newer).
+CW_DIR="$ROOT/build/clearwing-$CLEARWING"
+TRANSPILER_JAR="$CW_DIR/transpiler/build/libs/transpiler-$CLEARWING.jar"
+if [ ! -f "$TRANSPILER_JAR" ]; then
+    rm -rf "$CW_DIR"
+    git clone --depth 1 -b "v$CLEARWING" https://github.com/TheLogicMaster/clearwing-vm "$CW_DIR"
+    (cd "$CW_DIR" && JITPACK=1 bash ./gradlew --no-daemon --console=plain :transpiler:shadowJar)
+fi
 
 ./gradlew --no-daemon --console=plain :switch:switchDeps
 
@@ -22,7 +33,6 @@ rm -rf "$DIST"
 mkdir -p "$DIST/src" "$DIST/romfs/classpath" "$OUT"
 
 SWITCHGDX_JAR="$(ls "$DEPS"/switchgdx/*.jar)"
-TRANSPILER_JAR="$(ls "$DEPS"/transpiler/*.jar)"
 
 echo "== Transpiling Java bytecode to C++"
 java -jar "$TRANSPILER_JAR" \

@@ -37,6 +37,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
+            build/clearwing-*
           key: gradle-${{ hashFiles('**/*.gradle', 'gradle/wrapper/gradle-wrapper.properties') }}
 
       - name: Build

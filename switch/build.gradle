@@ -4,6 +4,7 @@ plugins {
 
 // The transpile and NRO steps live in scripts/build-switch.sh. This module only
 // compiles the launcher and gathers the jars the Clearwing transpiler needs.
+// The transpiler itself is built from source by the script (not on JitPack).
 
 java.sourceCompatibility = java.targetCompatibility = appJavaCompatibility
 
@@ -14,9 +15,6 @@ repositories {
 }
 
 configurations {
-    transpiler {
-        transitive = false
-    }
     switchgdx {
         transitive = false
     }
@@ -24,7 +22,6 @@ configurations {
 
 dependencies {
     switchgdx "com.thelogicmaster:switch-gdx:$switchGdxVersion"
-    transpiler "com.thelogicmaster.clearwing-vm:transpiler:$clearwingVersion"
     implementation project(':core')
     implementation "com.thelogicmaster:switch-gdx:$switchGdxVersion"
     implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
@@ -35,10 +32,9 @@ dependencies {
 
 tasks.register('switchDeps', Sync) {
     group = 'SwitchGDX'
-    description = 'Collect the transpiler, SwitchGDX and all runtime jars into build/switch-deps'
+    description = 'Collect SwitchGDX and all runtime jars into build/switch-deps'
     dependsOn 'classes'
     into layout.buildDirectory.dir('switch-deps')
-    from(configurations.transpiler) { into 'transpiler' }
     from(configurations.switchgdx) { into 'switchgdx' }
     from(configurations.runtimeClasspath.filter { it.isFile() && !it.name.startsWith('switch-gdx-') }) { into 'libs' }
     from(layout.buildDirectory.dir('classes/java/main')) { into 'classes' }
