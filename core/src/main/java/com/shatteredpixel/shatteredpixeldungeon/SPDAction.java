@@ -155,27 +155,27 @@ public class SPDAction extends GameAction {
 
 	private static final LinkedHashMap<Integer, GameAction> defaultControllerBindings = new LinkedHashMap<>();
 	static {
+		//Switch port: touch handles menus and containers, so buttons map to direct actions
 		defaultControllerBindings.put( Input.Keys.BUTTON_START,     SPDAction.BACK );
 		defaultControllerBindings.put( Input.Keys.BUTTON_SELECT,    SPDAction.JOURNAL );
 
-		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        SPDAction.LEFT_CLICK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBR,    SPDAction.LEFT_CLICK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        SPDAction.RIGHT_CLICK );
-
-		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     SPDAction.TAG_ACTION );
-		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   SPDAction.TAG_LOOT );
-		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   SPDAction.TAG_RESUME );
-		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  SPDAction.CYCLE );
-
-		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    SPDAction.WAIT_OR_PICKUP );
-
-		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        SPDAction.ZOOM_IN );
-		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        SPDAction.ZOOM_OUT );
-
 		defaultControllerBindings.put( Input.Keys.BUTTON_A,         SPDAction.TAG_ATTACK );
-		defaultControllerBindings.put( Input.Keys.BUTTON_B,         SPDAction.EXAMINE );
-		defaultControllerBindings.put( Input.Keys.BUTTON_X,         SPDAction.QUICKSLOT_SELECTOR );
-		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         SPDAction.INVENTORY_SELECTOR );
+		defaultControllerBindings.put( Input.Keys.BUTTON_B,         SPDAction.WAIT_OR_PICKUP );
+		defaultControllerBindings.put( Input.Keys.BUTTON_X,         SPDAction.EXAMINE );
+		defaultControllerBindings.put( Input.Keys.BUTTON_Y,         SPDAction.INVENTORY );
+
+		defaultControllerBindings.put( Input.Keys.DPAD_UP+1000,     SPDAction.QUICKSLOT_1 );
+		defaultControllerBindings.put( Input.Keys.DPAD_RIGHT+1000,  SPDAction.QUICKSLOT_2 );
+		defaultControllerBindings.put( Input.Keys.DPAD_DOWN+1000,   SPDAction.QUICKSLOT_3 );
+		defaultControllerBindings.put( Input.Keys.DPAD_LEFT+1000,   SPDAction.QUICKSLOT_4 );
+		defaultControllerBindings.put( Input.Keys.BUTTON_L1,        SPDAction.QUICKSLOT_5 );
+		defaultControllerBindings.put( Input.Keys.BUTTON_R1,        SPDAction.QUICKSLOT_6 );
+
+		defaultControllerBindings.put( Input.Keys.BUTTON_L2,        SPDAction.ZOOM_OUT );
+		defaultControllerBindings.put( Input.Keys.BUTTON_R2,        SPDAction.ZOOM_IN );
+
+		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBL,    SPDAction.REST );
+		defaultControllerBindings.put( Input.Keys.BUTTON_THUMBR,    SPDAction.TAG_RESUME );
 	}
 
 	public static LinkedHashMap<Integer, GameAction> getControllerDefaults() {
