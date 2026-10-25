@@ -55,7 +55,9 @@ public enum Holiday {
 //		if (cached == null){
 //			cached = getHolidayForDate((GregorianCalendar) GregorianCalendar.getInstance());
 //		}
-		return cached;
+		//Switch port: no GregorianCalendar in the runtime, so holidays are off.
+		// Callers (Pasty, RatKing...) switch on the result, so never return null.
+		return cached != null ? cached : NONE;
 	}
 
 	//requires a gregorian calendar
