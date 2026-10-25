@@ -78,7 +78,13 @@ new = ("    socketInitializeDefault();\n"
        "    }\n")
 if old not in s:
     sys.exit("SwitchGDX.cpp: userAppInit pattern not found")
-open(p, "w").write(s.replace(old, new, 1))
+s = s.replace(old, new, 1)
+# SwitchGDX quits on +, but the game uses + as its menu/back button.
+plus = "    if (kDown & HidNpadButton_Plus)\n        return false;\n"
+if plus not in s:
+    sys.exit("SwitchGDX.cpp: Plus-to-quit pattern not found")
+s = s.replace(plus, "", 1)
+open(p, "w").write(s)
 PY
 
 # Newer devkitPro freetype pulls in harfbuzz (and friends): take the static
@@ -96,6 +102,15 @@ grep -n "start-group" "$DIST/switch.cmake" >/dev/null || { echo "switch.cmake pa
 cp -r "$ROOT/core/src/main/assets/." "$DIST/romfs/"
 cp -r "$ROOT/desktop/src/main/assets/." "$DIST/romfs/"
 cp "$ROOT/switch/icon.jpg" "$DIST/icon.jpg"
+
+# SDL_mixer only recognises MP3s that start with an ID3 tag or an MPEG-1 frame
+# sync (FF FA/FB). Some SPD sounds are MPEG-2 (FF F3) and fail with
+# "Unrecognized audio format"; an empty ID3v2 header makes them load.
+for f in "$DIST"/romfs/sounds/*.mp3; do
+    if [ "$(head -c 3 "$f")" != "ID3" ]; then
+        { printf 'ID3\003\000\000\000\000\000\000'; cat "$f"; } > "$f.tmp" && mv "$f.tmp" "$f"
+    fi
+done
 
 # Sync into the stable build dir so unchanged files keep their timestamps
 rsync -crh --delete --checksum --exclude '/build-*' "$DIST/" "$OUT/"
