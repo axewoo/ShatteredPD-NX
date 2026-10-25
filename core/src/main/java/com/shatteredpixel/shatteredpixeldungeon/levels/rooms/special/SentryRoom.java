@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,17 +21,12 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.NPC;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Beam;
-import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
@@ -45,12 +40,8 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EmptyRoom;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.SentrySprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
@@ -184,17 +175,25 @@ public class SentryRoom extends SpecialRoom {
 		}
 
 		//1 floor set higher in probability, never cursed
-		//1 floor set higher in probability, never cursed
-		if (Random.Int(2) == 0) {
-			prize = Generator.randomWeapon((Dungeon.depth / 5) + 1);
-			if (((Weapon)prize).hasCurseEnchant()){
-				((Weapon) prize).enchant(null);
-			}
-		} else {
-			prize = Generator.randomArmor((Dungeon.depth / 5) + 1);
-			if (((Armor)prize).hasCurseGlyph()){
-				((Armor) prize).inscribe(null);
-			}
+		switch (Random.Int(5)){
+			case 0: case 1: default:
+				prize = Generator.randomWeapon((Dungeon.depth / 5) + 1);
+				if (((Weapon)prize).hasCurseEnchant()){
+					((Weapon) prize).enchant(null);
+				}
+				break;
+			case 2:
+				prize = Generator.randomMissile((Dungeon.depth / 5) + 1);
+				if (((Weapon)prize).hasCurseEnchant()){
+					((Weapon) prize).enchant(null);
+				}
+				break;
+			case 3: case 4:
+				prize = Generator.randomArmor((Dungeon.depth / 5) + 1);
+				if (((Armor)prize).hasCurseGlyph()){
+					((Armor) prize).inscribe(null);
+				}
+				break;
 		}
 		prize.cursed = false;
 		prize.cursedKnown = true;
@@ -225,7 +224,7 @@ public class SentryRoom extends SpecialRoom {
 	public static class Sentry extends NPC {
 
 		{
-			spriteClass = SentrySprite.class;
+			spriteClass = SentrySprite.Red.class;
 
 			properties.add(Property.IMMOVABLE);
 		}
@@ -302,6 +301,15 @@ public class SentryRoom extends SpecialRoom {
 		}
 
 		@Override
+		public CharSprite sprite() {
+			SentrySprite sprite = (SentrySprite) super.sprite();
+			if (curChargeDelay != initialChargeDelay){
+				sprite.charge();
+			}
+			return sprite;
+		}
+
+		@Override
 		public int attackSkill(Char target) {
 			return 20 + Dungeon.depth * 2;
 		}
@@ -350,110 +358,6 @@ public class SentryRoom extends SpecialRoom {
 			curChargeDelay = bundle.getFloat(CUR_DELAY);
 			room = (EmptyRoom) bundle.get(ROOM);
 		}
-	}
-
-	public static class SentrySprite extends MobSprite {
-
-		private Animation charging;
-		private Emitter chargeParticles;
-
-		public SentrySprite(){
-			texture( Assets.Sprites.RED_SENTRY );
-
-			idle = new Animation(1, true);
-			idle.frames(texture.uvRect(0, 0, 8, 15));
-
-			run = idle.clone();
-			attack = idle.clone();
-			charging = idle.clone();
-			die = idle.clone();
-			zap = idle.clone();
-
-			play( idle );
-		}
-
-		@Override
-		public void zap( int pos ) {
-			idle();
-			flash();
-			emitter().burst(MagicMissile.WardParticle.UP, 2);
-			if (Actor.findChar(pos) != null){
-				parent.add(new Beam.DeathRay(center(), Actor.findChar(pos).sprite.center()));
-			} else {
-				parent.add(new Beam.DeathRay(center(), DungeonTilemap.raisedTileCenterToWorld(pos)));
-			}
-			((Sentry)ch).onZapComplete();
-		}
-
-		@Override
-		public void link(Char ch) {
-			super.link(ch);
-
-			chargeParticles = centerEmitter();
-			chargeParticles.autoKill = false;
-			chargeParticles.pour(MagicMissile.MagicParticle.ATTRACTING, 0.05f);
-			chargeParticles.on = false;
-
-			if (((Sentry)ch).curChargeDelay != ((Sentry) ch).initialChargeDelay){
-				play(charging);
-			}
-		}
-
-		@Override
-		public void die() {
-			super.die();
-			if (chargeParticles != null){
-				chargeParticles.on = false;
-			}
-		}
-
-		@Override
-		public void kill() {
-			super.kill();
-			if (chargeParticles != null){
-				chargeParticles.killAndErase();
-			}
-		}
-
-		public void charge(){
-			play(charging);
-			if (visible) Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
-		}
-
-		@Override
-		public void play(Animation anim) {
-			if (chargeParticles != null) chargeParticles.on = anim == charging;
-			super.play(anim);
-		}
-
-		private float baseY = Float.NaN;
-
-		@Override
-		public void place(int cell) {
-			super.place(cell);
-			baseY = y;
-		}
-
-		@Override
-		public void turnTo(int from, int to) {
-			//do nothing
-		}
-
-		@Override
-		public void update() {
-			super.update();
-			if (chargeParticles != null){
-				chargeParticles.pos( center() );
-				chargeParticles.visible = visible;
-			}
-
-			if (!paused){
-				if (Float.isNaN(baseY)) baseY = y;
-				y = baseY + (float) Math.sin(Game.timeTotal);
-				shadowOffset = 0.25f - 0.8f*(float) Math.sin(Game.timeTotal);
-			}
-		}
-
 	}
 
 }

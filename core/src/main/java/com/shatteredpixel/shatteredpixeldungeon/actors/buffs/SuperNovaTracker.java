@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
-import com.shatteredpixel.shatteredpixeldungeon.effects.TargetedCell;
 import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.ShadowCaster;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
@@ -105,9 +104,9 @@ public class SuperNovaTracker extends Buff {
 				if (fieldOfView[i] && !Dungeon.level.solid[i]){
 					new Bomb.ConjuredBomb().explode(i); //yes, a bomb at every cell
 					//this means that something in the blast effectively takes:
-					//5.33x bomb dmg when fully inside
-					//4.33x when along straight edge
-					//2x when outside straight edge
+					//9x bomb dmg when fully inside
+					//6x when along straight edge
+					//3x when outside straight edge
 					Dungeon.level.destroy(i);
 					if (Actor.findChar(i) == Dungeon.hero){
 						GameScene.flash(0x80FFFFFF);
@@ -118,8 +117,8 @@ public class SuperNovaTracker extends Buff {
 
 		} else {
 			for (int i = 0; i < Dungeon.level.length(); i++){
-				if (fieldOfView[i]){
-					target.sprite.parent.add(new TargetedCell(i, 0xFF0000));
+				if (fieldOfView[i] && !Dungeon.level.solid[i]){
+					GameScene.targetedCell(i, Actor.TICK);
 				}
 			}
 		}

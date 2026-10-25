@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.NaturesPower;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Splash;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfSharpshooting;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -295,6 +296,23 @@ public class SpiritBow extends Weapon {
 			image = ItemSpriteSheet.SPIRIT_ARROW;
 
 			hitSound = Assets.Sounds.HIT_ARROW;
+
+			setID = 0;
+		}
+
+		@Override
+		public ArrayList<String> actions(Hero hero) {
+			return new ArrayList<>();
+		}
+
+		@Override
+		public String defaultAction() {
+			return null;
+		}
+
+		@Override
+		public int defaultQuantity() {
+			return 1;
 		}
 
 		@Override
@@ -359,6 +377,11 @@ public class SpiritBow extends Weapon {
 		}
 
 		@Override
+		public Item split(int amount) {
+			return null;
+		}
+
+		@Override
 		public void throwSound() {
 			Sample.INSTANCE.play( Assets.Sounds.ATK_SPIRITBOW, 1, Random.Float(0.87f, 1.15f) );
 		}
@@ -380,7 +403,7 @@ public class SpiritBow extends Weapon {
 						user.buff(Talent.LethalMomentumTracker.class).detach();
 						user.next();
 					} else {
-						user.spendAndNext(castDelay(user, dst));
+						user.spendAndNext(castDelay(user, cell));
 					}
 					sniperSpecial = false;
 					flurryCount = -1;
@@ -435,7 +458,7 @@ public class SpiritBow extends Weapon {
 												user.buff(Talent.LethalMomentumTracker.class).detach();
 												user.next();
 											} else {
-												user.spendAndNext(castDelay(user, dst));
+												user.spendAndNext(castDelay(user, cell));
 											}
 											sniperSpecial = false;
 											flurryCount = -1;

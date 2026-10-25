@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ public class StoneOfClairvoyance extends Runestone {
 			left = Math.max(0, left);
 			for (curr = left + y * Dungeon.level.width(); curr <= right + y * Dungeon.level.width(); curr++){
 
-				GameScene.effectOverFog( new CheckedCell( curr, cell ) );
+				GameScene.checkedCell( curr, cell );
 				Dungeon.level.mapped[curr] = true;
 				
 				if (Dungeon.level.secret[curr]) {

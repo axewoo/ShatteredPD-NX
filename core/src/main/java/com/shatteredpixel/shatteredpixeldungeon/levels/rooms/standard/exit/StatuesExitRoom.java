@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,9 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StatuesRoom;
-import com.watabou.utils.PathFinder;
+import com.shatteredpixel.shatteredpixeldungeon.tiles.custom.Carpet;
+import com.watabou.utils.Point;
+import com.watabou.utils.Rect;
 
 public class StatuesExitRoom extends StatuesRoom {
 
@@ -44,21 +46,55 @@ public class StatuesExitRoom extends StatuesRoom {
 	public void paint(Level level) {
 		super.paint(level);
 
-		int exit = level.pointToCell(center());
+		int exit = -1;
+		if (width() >= 11 || height() >= 11){
+			Point c = center();
+			exit = level.pointToCell(c);
 
-		if (width() <= 10 && height()<= 10){
-			Painter.fill(level, this, 3, Terrain.EMPTY_SP);
-		}
+			Carpet carpet = new Carpet();
+			Rect carpetRect = new Rect(c.x-1, c.y-1, c.x+1, c.y+1);
+			if (width()%2 == 0){
+				if (c.x < (left+right)/2f){
+					carpetRect.right++;
+				} else {
+					carpetRect.left--;
+				}
+			}
+			if (height()%2 == 0){
+				if (c.y < (top+bottom)/2f){
+					carpetRect.bottom++;
+				} else {
+					carpetRect.top--;
+				}
+			}
 
-		for (int i : PathFinder.NEIGHBOURS8){
-			if (level.map[exit + i] != Terrain.STATUE_SP) {
-				Painter.set(level, exit + i, Terrain.EMPTY_SP);
+			for (Point p : carpetRect.getPoints()){
+				if (level.map[level.pointToCell(p)] != Terrain.STATUE ){
+					Painter.set(level, p, Terrain.EMPTY_DECO);
+				}
+			}
+
+			carpet.setRect(carpetRect.left, carpetRect.top, carpetRect.width()+1, carpetRect.height()+1);
+			carpet.overrideTile(exit, level, Carpet.SKIP);
+			level.customTiles.add(0, carpet); //so other carpets are on top of it
+		} else {
+			//already have an exit placed in this case
+			for ( Point p : getPoints()){
+				if (level.map[level.pointToCell(p)] == Terrain.EXIT){
+					exit = level.pointToCell(p);
+					break;
+				}
 			}
 		}
 
 		Painter.set( level, exit, Terrain.EXIT );
 		level.transitions.add(new LevelTransition(level, exit, LevelTransition.Type.REGULAR_EXIT));
 
+	}
+
+	@Override
+	public boolean canPlaceCharacter(Point p, Level l) {
+		return super.canPlaceCharacter(p, l) && l.pointToCell(p) != l.exit();
 	}
 
 }

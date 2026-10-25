@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -130,9 +130,14 @@ public class WarpBeacon extends ArmorAbility {
 
 									Sample.INSTANCE.play(Assets.Sounds.HIT_CRUSH);
 									Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
+
+									//handle rare cases where damage causes char swapping or movement
+									if (Actor.findChar(existing.pos) != existing){
+										existing = Actor.findChar(existing.pos);
+									}
 								}
 
-								if (existing.isAlive()){
+								if (existing != null && existing.isAlive() && existing.pos == tracker.pos){
 									Char toPush = Char.hasProp(existing, Char.Property.IMMOVABLE) ? hero : existing;
 
 									ArrayList<Integer> candidates = new ArrayList<>();

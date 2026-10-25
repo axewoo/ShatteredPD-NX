@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.watabou.utils.Point;
 
@@ -105,14 +106,22 @@ public class ToxicGasRoom extends SpecialRoom {
 
 		level.addItemToSpawn(new PotionOfPurity());
 
-		entrance().set( Door.Type.UNLOCKED );
+		entrance().set( Door.Type.REGULAR );
 
 	}
 
 	@Override
 	public boolean canPlaceCharacter(Point p, Level l) {
+		if (!super.canPlaceCharacter(p, l)) {
+			return false;
+		}
 		Blob gas = l.blobs.get(ToxicGas.class);
 		return gas == null || gas.volume == 0 || gas.cur[l.pointToCell(p)] == 0;
+	}
+
+	@Override
+	public boolean canPlaceTrap(Point p) {
+		return false; //room is already filled with trap-hazards, no need to add more
 	}
 
 	public static class ToxicGasSeed extends Blob {
@@ -153,6 +162,11 @@ public class ToxicGasRoom extends SpecialRoom {
 
 			canBeHidden = false;
 			active = false;
+		}
+
+		@Override
+		public String desc() {
+			return Messages.get(this, "desc");
 		}
 
 		@Override

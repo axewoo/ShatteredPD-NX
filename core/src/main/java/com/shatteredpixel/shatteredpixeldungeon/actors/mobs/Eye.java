@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -192,6 +192,7 @@ public class Eye extends Mob {
 			if (hit( this, ch, true )) {
 				int dmg = Random.NormalIntRange( 30, 50 );
 				dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
+
 				ch.damage( dmg, new DeathGaze() );
 
 				if (Dungeon.level.heroFOV[pos]) {

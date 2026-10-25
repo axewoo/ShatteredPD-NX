@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,8 +70,10 @@ public class MagicMissile extends Emitter {
 	public static final int SHAMAN_RED      = 11;
 	public static final int SHAMAN_BLUE     = 12;
 	public static final int SHAMAN_PURPLE   = 13;
-	public static final int ELMO            = 14;
-	public static final int POISON          = 15;
+	public static final int SHAMAN_ELMO     = 14;
+	public static final int ELMO            = 15;
+	public static final int POISON          = 16;
+	public static final int LIGHT_MISSILE   = 17;
 
 	public static final int MAGIC_MISS_CONE = 100;
 	public static final int FROST_CONE      = 101;
@@ -86,6 +88,7 @@ public class MagicMissile extends Emitter {
 	public static final int PURPLE_CONE     = 111;
 	public static final int SPARK_CONE      = 112;
 	public static final int BLOOD_CONE      = 113;
+	public static final int POISON_CONE     = 114;
 
 	//use SPECK + the constant of the Speck you want. e.g. MagicMissile.SPECK + Speck.TOXIC
 	public static final int SPECK           = 1000;
@@ -189,6 +192,10 @@ public class MagicMissile extends Emitter {
 				size( 2 );
 				pour( ShamanParticle.PURPLE, 0.01f );
 				break;
+			case SHAMAN_ELMO:
+				size( 2 );
+				pour( ShamanParticle.ELMO, 0.01f );
+				break;
 			case ELMO:
 				size( 5 );
 				pour( ElmoParticle.FACTORY, 0.01f );
@@ -196,6 +203,10 @@ public class MagicMissile extends Emitter {
 			case POISON:
 				size( 3 );
 				pour( PoisonParticle.MISSILE, 0.01f );
+				break;
+			case LIGHT_MISSILE:
+				size( 4 );
+				pour( WhiteParticle.YELLOW, 0.01f );
 				break;
 
 			case MAGIC_MISS_CONE:
@@ -249,6 +260,10 @@ public class MagicMissile extends Emitter {
 			case BLOOD_CONE:
 				size( 10 );
 				pour( BloodParticle.FACTORY, 0.03f );
+				break;
+			case POISON_CONE:
+				size( 10 );
+				pour( PoisonParticle.MISSILE, 0.03f );
 				break;
 		}
 
@@ -452,6 +467,18 @@ public class MagicMissile extends Emitter {
 						.reset( x, y, ColorMath.random(0xBB33FF, 0x5E1A80) );
 			}
 		};
+
+		public static final Emitter.Factory ELMO = new Factory() {
+			@Override
+			public void emit( Emitter emitter, int index, float x, float y ) {
+				((ShamanParticle)emitter.recycle( ShamanParticle.class ))
+						.reset( x, y, ColorMath.random(0x66EE99, 0x22EE66) );
+			}
+			@Override
+			public boolean lightMode() {
+				return true;
+			}
+		};
 		
 		int startColor;
 		int endColor;
@@ -493,6 +520,28 @@ public class MagicMissile extends Emitter {
 				return true;
 			}
 		};
+
+		public static final Emitter.Factory YELLOW = new Factory() {
+			@Override
+			public void emit( Emitter emitter, int index, float x, float y ) {
+				((WhiteParticle)emitter.recycle( WhiteParticle.class )).reset( x, y, 1f, 1f, 0.25f );
+			}
+			@Override
+			public boolean lightMode() {
+				return true;
+			}
+		};
+
+		public static final Emitter.Factory WALL = new Factory() {
+			@Override
+			public void emit( Emitter emitter, int index, float x, float y ) {
+				((WhiteParticle)emitter.recycle( WhiteParticle.class )).resetWall( x, y );
+			}
+			@Override
+			public boolean lightMode() {
+				return true;
+			}
+		};
 		
 		public WhiteParticle() {
 			super();
@@ -509,6 +558,22 @@ public class MagicMissile extends Emitter {
 			this.y = y;
 			
 			left = lifespan;
+			hardlight(1, 1, 1);
+		}
+
+		public void reset( float x, float y, float r, float g, float b ) {
+			reset(x, y);
+			hardlight(r, g, b);
+		}
+
+		public void resetWall( float x, float y){
+			reset(x, y);
+
+			left = lifespan = 2f;
+
+			this.x = Math.round(x/4)*4;
+			this.y = Math.round(y/4)*4 - 6;
+			this.x += Math.round(this.y % 16)/4f - 2;
 		}
 		
 		@Override
@@ -572,10 +637,15 @@ public class MagicMissile extends Emitter {
 			public void emit( Emitter emitter, int index, float x, float y ) {
 				((ForceParticle)emitter.recycle( ForceParticle.class )).reset( index, x, y );
 			}
+
+			@Override
+			public boolean lightMode() {
+				return true;
+			}
 		};
 
 		public void reset( int index, float x, float y ) {
-			super.reset( x, y, 0xFFFFFF, 8, 0.5f );
+			super.reset( x, y, ColorMath.interpolate(0xFFCC99, 0xBB4411, Random.Float()), 8, 0.5f );
 
 			speed.polar( PointF.PI2 / 8 * index, 12 );
 			this.x -= speed.x * lifespan;

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DwarfKing;
-import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.items.BrokenSeal;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
@@ -42,13 +41,13 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ActionIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.AttackIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BuffIndicator;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
-import com.watabou.utils.BArray;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndCombo;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
@@ -91,13 +90,15 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	public void hit( Char enemy ) {
 
 		count++;
-		comboTime = 5f;
-
-		if (!enemy.isAlive() || (enemy.buff(Corruption.class) != null && enemy.HP == enemy.HT)){
-			comboTime = Math.max(comboTime, 15*((Hero)target).pointsInTalent(Talent.CLEAVE));
+		if (comboTime <= 5f) {
+			comboTime = Math.max(comboTime, 5f);
+			initialComboTime = 5f;
 		}
 
-		initialComboTime = comboTime;
+		if (!enemy.isAlive() || (enemy.buff(Corruption.class) != null && enemy.HP == enemy.HT)){
+			comboTime = 15f + 15f*((Hero)target).pointsInTalent(Talent.CLEAVE);
+			initialComboTime = comboTime;
+		}
 
 		if ((getHighestMove() != null)) {
 
@@ -124,7 +125,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public boolean act() {
-		comboTime-=TICK;
+		comboTime -= TICK * HoldFast.buffDecayFactor(target);
 		spend(TICK);
 		if (comboTime <= 0) {
 			detach();
@@ -288,7 +289,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	public void useMove(ComboMove move){
 		if (move == ComboMove.PARRY){
 			parryUsed = true;
-			comboTime = 5f;
+			comboTime = Math.max(comboTime, 5f);
 			Invisibility.dispel();
 			Buff.affect(target, ParryTracker.class, Actor.TICK);
 			((Hero)target).spendAndNext(Actor.TICK);
@@ -337,6 +338,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	}
 
 	private static ComboMove moveBeingUsed;
+	private static int furyHitsLeft = 0;
 
 	private void doAttack(final Char enemy) {
 
@@ -369,7 +371,6 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			//special on-hit effects
 			switch (moveBeingUsed) {
 				case CLOBBER:
-					if (!wasAlly) hit(enemy);
 					//trace a ballistica to our target (which will also extend past them
 					Ballistica trajectory = new Ballistica(target.pos, enemy.pos, Ballistica.STOP_TARGET);
 					//trim it to just be the part that goes past them
@@ -385,6 +386,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 							dist--;
 						}
 					}
+					if (!wasAlly) hit(enemy);
 					if (enemy.pos == oldPos) {
 						WandOfBlastWave.throwChar(enemy, trajectory, dist, true, false, hero);
 					}
@@ -411,13 +413,8 @@ public class Combo extends Buff implements ActionIndicator.Action {
 							ch.sprite.bloodBurstA(target.sprite.center(), aoeHit);
 							ch.sprite.flash();
 
-							if (!ch.isAlive()) {
-								if (hero.hasTalent(Talent.LETHAL_DEFENSE) && hero.buff(BrokenSeal.WarriorShield.class) != null) {
-									BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-									int shieldAmt = Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE) / 3f);
-									shield.supercharge(shieldAmt);
-									hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldAmt), FloatingText.SHIELDING);
-								}
+							if (!ch.isAlive() && hero.hasTalent(Talent.LETHAL_DEFENSE)) {
+								Buff.affect(hero, BrokenSeal.WarriorShield.class).reduceCooldown(hero.pointsInTalent(Talent.LETHAL_DEFENSE)/3f);
 							}
 						}
 					}
@@ -443,10 +440,16 @@ public class Combo extends Buff implements ActionIndicator.Action {
 				break;
 
 			case FURY:
-				count--;
+				if (count > 0){
+					furyHitsLeft = count;
+					count = 0;
+					detach();
+					hero.spend(hero.attackDelay());
+				}
+				furyHitsLeft--;
 				//fury attacks as many times as you have combo count
-				if (count > 0 && enemy.isAlive() && hero.canAttack(enemy) &&
-						(wasAlly || enemy.alignment != target.alignment)){
+				if (furyHitsLeft > 0 && enemy.isAlive() && hero.canAttack(enemy) &&
+						hero.paralysed == 0 && (wasAlly || enemy.alignment != target.alignment)){
 					target.sprite.attack(enemy.pos, new Callback() {
 						@Override
 						public void call() {
@@ -454,10 +457,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 						}
 					});
 				} else {
-					detach();
+					furyHitsLeft = 0;
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
 					ActionIndicator.clearAction(Combo.this);
-					hero.spendAndNext(hero.attackDelay());
+					hero.next();
 				}
 				break;
 
@@ -469,11 +472,8 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		}
 
 		if (!enemy.isAlive() || (!wasAlly && enemy.alignment == target.alignment)) {
-			if (hero.hasTalent(Talent.LETHAL_DEFENSE) && hero.buff(BrokenSeal.WarriorShield.class) != null){
-				BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-				int shieldAmt = Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE) / 3f);
-				shield.supercharge(shieldAmt);
-				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldAmt), FloatingText.SHIELDING);
+			if (hero.hasTalent(Talent.LETHAL_DEFENSE)){
+				Buff.affect(hero, BrokenSeal.WarriorShield.class).reduceCooldown(hero.pointsInTalent(Talent.LETHAL_DEFENSE)/3f);
 			}
 		}
 

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +61,7 @@ public class PotionOfHealing extends Potion {
 		} else {
 			//starts out healing 30 hp, equalizes with hero health total at level 11
 			Healing healing = Buff.affect(ch, Healing.class);
-			healing.setHeal((int) (0.8f * ch.HT + 14), 0.25f, 0);
-			healing.applyVialEffect();
+			healing.setHeal((int) (0.8f * ch.HT + 14), 0.25f, 0, true);
 			if (ch == Dungeon.hero){
 				GLog.p( Messages.get(PotionOfHealing.class, "heal") );
 			}

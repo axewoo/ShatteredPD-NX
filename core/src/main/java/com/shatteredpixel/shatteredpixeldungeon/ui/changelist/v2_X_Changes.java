@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,32 +21,17 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.ui.changelist;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Whip;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GnollGuardSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.HeroSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ShopkeeperSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.TormentedSpiritSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.WandmakerSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.TalentIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
 
 public class v2_X_Changes {
 
 	public static void addAllChanges( ArrayList<ChangeInfo> changeInfos ){
-		add_Coming_Soon(changeInfos);
 		add_v2_5_Changes(changeInfos);
 		add_v2_4_Changes(changeInfos);
 		add_v2_3_Changes(changeInfos);
@@ -55,112 +40,23 @@ public class v2_X_Changes {
 		add_v2_0_Changes(changeInfos);
 	}
 
-	public static void add_Coming_Soon( ArrayList<ChangeInfo> changeInfos ) {
-
-		ChangeInfo changes = new ChangeInfo("Coming Soon", true, "");
-		changes.hardlight(0xCCCCCC);
-		changeInfos.add(changes);
-
-		changes.addButton( new ChangeButton(Icons.get(Icons.SHPX), "Overview",
-				"The next major update to Shattered will be v3.0.0, which will add the game's 6th hero: The Cleric!\n" +
-				"\n" +
-				"v2.0.0, which added the duelist, took about 5 months. While obviously I would like the update to release faster than that, I can't make any promises. I do expect to make some posts as development progresses though, so you should hear something from me about progress and design on the Cleric before the end of the year, ideally before December.\n" +
-				"\n" +
-				"Please keep in mind that while I always try to keep to the ETAs I provide, they are just estimates. If you don't hear from me by the ETA, it means I'm still busy with the update!"));
-
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.MASTERY), "The Cleric!",
-				"The Cleric is going to be a divine spellcaster who focuses on defense and utility magic that they access through a unique item! I expect them to contrast best with the mage, who's arcane magic abilities enhance the power of wands. I expect to share more details about the cleric in blog posts when v3.0.0 gets closer to releasing. Like all other heroes, the Cleric will have 2 subclasses, 3 armor abilities, and 26 talents!"));
-
-		changes.addButton( new ChangeButton(Icons.get(Icons.DISPLAY), "Visual Improvements",
-				"v3.0.0 is also likely to feature some visual improvements, potentially including some of what I've teased in the recent '10 years of Shattered Pixel Dungeon' blogpost, plus a few others I've not shared yet.\n" +
-				"\n" +
-				"Unfortunately the new art is still in the early stages, and so it's very hard for me to say where things will be when v3.0.0 releases, and what things in particular might be ready."));
-
-		changes.addButton( new ChangeButton(Icons.get(Icons.PREFS), "Misc. Changes",
-				"As always there will be some smaller changes in v3.0.0 as well, including bugfixes and minor balance/mechanics tweaks.\n" +
-				"\n" +
-				"Given that v3.0.0 will take a while to make, I'll likely give v2.5.0 some bigger patches that usual, including any needed balance or mechanics tweaks that I don't want to delay into v3.0.0."));
-
-	}
-
 	public static void add_v2_5_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
 		ChangeInfo changes = new ChangeInfo("v2.5", true, "");
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes = new ChangeInfo("v2.5.2", false, null);
-		changes.hardlight(Window.TITLE_COLOR);
-		changeInfos.add(changes);
-
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
-				"Just a quick extra patch this time to fix a few more bugs:\n" +
-				"_Caused by v2.5.1:_\n" +
-				"_-_ Crashes when using transmutation abilities (sorry!)\n" +
-				"_-_ Shard of Oblivion description not using its new bonus loot rate\n" +
-				"\n" +
-				"_Caused by v2.5.0:_\n" +
-				"_-_ Dark floors sometimes giving 1/2 vision instead of the new value of 5/8\n" +
-				"_-_ Drop and throw actions not working on Shard of Oblivion\n" +
-				"_-_ Some flying characters visually falling into pits when they die that shouldn't (e.g. ghosts)\n" +
-				"_-_ Various minor textual errors\n" +
-				"\n" +
-				"_Existed Prior to v2.5.0:_\n" +
-				"_-_ Various minor visual bugs with stealthy mimics"));
-		
-		changes = new ChangeInfo("v2.5.1", false, null);
-		changes.hardlight(Window.TITLE_COLOR);
-		changeInfos.add(changes);
-
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.CHAOTIC_CENSER), "New Trinket Buffs",
-				"Based on some early balance data it looks like some of the new trinkets aren't quite hitting the mark. I'm open to more extensive changes after getting in some more data, but for now I'm doing some simple buffs:\n" +
-				"\n" +
-				"_- Chaotic Censer_ internal RNG adjusted, now much more likely to fire gas at useful times. Now also tries to avoid firing at all in shops or enclosed spaces, as long as you don't loiter there.\n" +
-				"\n" +
-				"_- Salt Cube_ health regen loss down to 20/33/43/50% from 30/50/65/75%. This means total HP granted per food item is now unchanged with the salt cube, the regen just happens more slowly.\n" +
-				"\n" +
-				"_- Shard of Oblivion_ bonus loot per unidentified item up to 20% from 12.5%."));
-
-		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
-				"_-_ Jumping toward a distant well now clears it from the notes page\n" +
-				"_-_ Statue enemies no longer become passive again when ascending\n" +
-				"_-_ NPCs are now fooled by the disguise buff\n" +
-				"_-_ Sniper's Mark now shows its duration in its buff description\n" +
-				"_-_ Added Google Play Games achievements for the new researcher badges\n" +
-				"_-_ ShatteredPD is now categorized as a game on Android devices\n" +
-				"_-_ Updated Translations"));
-
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
-				"Fixed the following bugs:\n" +
-				"_Caused by v2.5.0:_\n" +
-				"_-_ Various crash and freeze bugs with the chaotic censer\n" +
-				"_-_ Goo and DM-300 benefitting from terrain while levitating\n" +
-				"_-_ Defeating temporarily transmogrified enemies not counting for the bestiary\n" +
-				"_-_ Underscores being incorrectly interpreted by the game in custom notes\n" +
-				"_-_ New 'remembering fullscreen monitor' functionality for desktop users not working properly\n" +
-				"_-_ Various minor textual and graphical errors\n" +
-				"\n" +
-				"_Existed Prior to v2.5.0:_\n" +
-				"_-_ Shopkeepers often failing to clear gasses from their shops\n" +
-				"_-_ Debuffs disappearing from DM-300's pylons on save/load\n" +
-				"_-_ Rare cases of levelgen hanging\n" +
-				"_-_ Game log spam during the tutorial in specific cases\n" +
-				"_-_ Corpse Dust sometimes spawning many wraiths in quick succession after spawning none\n" +
-				"_-_ Direction compass not pointing to exit after defeating Tengu\n" +
-				"_-_ Split alchemy guide not updating with inventory state in various cases\n" +
-				"_-_ Magic well note entries not being cleared if there are two wells in a level"));
-
 		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(Icons.get(Icons.SHPX), "Developer Commentary",
+		changes.addButton( new ChangeButton(ChangeIcons.V074_SHPX, "Developer Commentary",
 				"_-_ Released September 11th, 2024\n" +
 				"_-_ 119 days after v2.4.0\n" +
 				"\n" +
 				"Dev commentary will be added here in the future"));
 
-		changes.addButton( new ChangeButton(Icons.JOURNAL.get(), "Journal Overhaul!",
+		changes.addButton( new ChangeButton( ChangeIcons.V25_CATALOG, "Journal Overhaul!",
 				"_The game's Journal interface has been completely overhauled!_\n" +
 				"\n" +
 				"The Notes section has an entirely new grid-based UI with new icons, and _support for custom notes!_ Custom notes feature user-enterable text and can be tied to a floor, specific item, item type, or just be plain text.\n" +
@@ -171,7 +67,7 @@ public class v2_X_Changes {
 				"\n" +
 				"The guidebook tabs are unchanged, and the lore tab has been merged into the catalogs."));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.SALT_CUBE), "New Trinkets!",
+		changes.addButton( new ChangeButton( ChangeIcons.V25_SALT_CUBE, "New Trinkets!",
 				"_Four new trinkets have been added!_ Bringing the total to 15 trinkets.\n" +
 				"\n" +
 				"The _Salt Cube_ extends the duration that food keeps you full, but also reduces HP regeneration.\n" +
@@ -184,7 +80,7 @@ public class v2_X_Changes {
 				"\n" +
 				"There is also now a fourth 'random' option when selecting trinkets, if you don't want any of the first three."));
 
-		changes.addButton( new ChangeButton(Icons.DISPLAY_LAND.get(), "Region Splash Arts!",
+		changes.addButton( new ChangeButton( ChangeIcons.V12_DISPLAY_HORIZ, "Region Splash Arts!",
 				"_New splash arts have been added to the game's loading screens!_\n" +
 				"\n" +
 				"There's one for each of the five regions, once again made by Aleksandar Komitov!\n" +
@@ -195,7 +91,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.SCROLL_TIWAZ), "Interface Improvements",
+		changes.addButton( new ChangeButton( ChangeIcons.V080_SCROLL_TIWAZ, "Interface Improvements",
 				"In addition to the journal overhaul, there are several smaller UI changes and additions in this update too:\n" +
 				"\n" +
 				"_Scrolls of Upgrade_ now have a preview window that appears when they are used, that summarizes how the stats of an item will change when upgraded.\n" +
@@ -206,7 +102,7 @@ public class v2_X_Changes {
 				"\n" +
 				"The game now displays a little congratulations message after your first win, and clarity on what winning the game unlocks has been improved."));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.WAND_MAGIC_MISSILE), "Cursed Wand Expansion",
+		changes.addButton( new ChangeButton( ChangeIcons.V063_MAGICMISSILE, "Cursed Wand Expansion",
 				"Cursed wand effects have been massively expanded! There are now 16 new effects bringing the total number of effects up to 32. These include simple common effects like shooting bubbles and new super rare effects like a giant supernova explosion!\n" +
 				"\n" +
 				"A few existing cursed effects have also been changed:\n" +
@@ -214,7 +110,7 @@ public class v2_X_Changes {
 				"_-_ The uncommon 'shock and recharge' effect is now a lightning bolt, does more damage to a target and grants less wand recharge\n" +
 				"_-_ The rare inter-floor teleport effect now caps at sending the player back 10 floors"));
 
-		changes.addButton( new ChangeButton(Icons.BACKPACK_LRG.get(), "Inventory Management Improvements",
+		changes.addButton( new ChangeButton( ChangeIcons.V25_BACKPACK, "Inventory Management Improvements",
 				"I've made various smaller changes to make inventory management a bit easier:\n" +
 				"\n" +
 				"_-_ The potion bandolier can now store the waterskin, and the scroll holder can now store arcane styli\n" +
@@ -224,7 +120,23 @@ public class v2_X_Changes {
 				"_-_ Stones of Intuition now always get 2 uses each, even if the first guess is incorrect\n" +
 				"_-_ Dark dungeon levels no longer contain a torch, but also reduce vision by 3/8, down from 4/8"));
 
-		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
+		changes.addButton( new ChangeButton( ChangeIcons.V25_BOMB, "Bombs and Identification",
+				"I've fixed a long-standing exploit where players could use explosions to determine if equipment was upgraded. Explosions will now avoid destroying any equipment, previously they would destroy un-upgraded equipment only.\n" +
+				"\n" +
+				"As compensation to this change, I'm changing up a runestone, and buffing bombs and explosion effects:\n" +
+				"\n" +
+				"Firstly _Stones of Detect Magic_ are a new item that replace stones of disarming. Each stone can be used on a piece of equipment to identify whether it is cursed, and whether it is enchanted/upgraded. This should give a few more options when it comes to IDing equipment.",
+
+				"Secondly, bombs and explosion effects are buffed across the board:\n" +
+				"_-_ Explosion max damage +50% (this increases average damage by 33%)\n" +
+				"_-_ Bombs no longer bounce when thrown directly at characters\n" +
+				"_-_ Damage falloff removed from ALL explosion and bomb types\n" +
+				"_-_ Alchemy bombs now all explode in a minimum AOE of 5x5 (up from 3x3)\n" +
+				"_- Flashbangs_ redesigned, they are now smoke bombs, and spread shrouding fog in a 5x5 AOE in addition to dealing damage.\n" +
+				"_- Shocks Bombs_ redesigned, they are now flashbangs, and deal +25% electricity damage and stun for 10 turns within their 5x5 AOE.\n" +
+				"_- Regrowth Bomb_ AOE size up to 7x7 from 5x5, now always generate at least 3 plants, up from 2."));
+
+		changes.addButton(new ChangeButton(ChangeIcons.V081_MISC, Messages.get(ChangesScene.class, "misc"),
 				"_Highlights:_\n" +
 				"_-_ Enemies are now less willing to follow the hero's movement path when approaching from a distance\n" +
 				"_-_ Improved the quality of loot from tormented spirits\n" +
@@ -232,19 +144,23 @@ public class v2_X_Changes {
 				"_-_ Burn and Ooze now end the moment water is entered, but still always do at least 1 turn of damage\n" +
 				"_-_ Improved visibility of the ambitious imp\n" +
 				"_-_ Trinkets can now be energized to get 5 energy back\n" +
-				"_-_ Rings transmuted from artifacts can now be +1 or +2 if the artifact was +5 or +10.\n" +
+				"_-_ Rings transmuted from artifacts can now be +1 or +2 if the artifact was +5 or +10\n" +
+				"_-_ Vampiric no longer triggers on NPCs or allies\n" +
 				"_-_ Blooming now produces furrowed grass if regen effects are disabled during boss fights",
 
 				"_Characters:_\n" +
 				"_-_ Tengu no longer avoids ground-based effects as if he were flying\n" +
 				"_-_ Flying characters now visually fall into pits when they die\n" +
 				"_-_ Flying characters now only wake sleeping enemies they are next to\n" +
+				"_-_ Wraiths spawned by spectral necromancers are now more powerful\n" +
 				"_-_ Shadow clone now inherits silent steps from the Rogue\n" +
 				"_-_ DM-300 no longer spews gas at inorganic allies\n" +
+				"_-_ DM-300 can no longer use an ability immediately after exiting supercharge state\n" +
 				"_-_ Necromancers now interrupt the hero if they start summoning within vision\n" +
 				"\n" +
 				"_Effects:_\n" +
-				"_-_ Drowsy debuff now states its remaining duration in its buff description\n" +
+				"_-_ Drowsy and Sniper's Mark now state remaining duration in their descriptions\n" +
+				"_-_ Wells of health and awareness descriptions are now more accurate\n" +
 				"_-_ Thorns glyph no longer rebounds damage to allies",
 
 				"_Items:_\n" +
@@ -253,6 +169,7 @@ public class v2_X_Changes {
 				"_-_ Added a cancel confirmation window to scrolls of enchantment\n" +
 				"_-_ Armor now always takes 1 turn to equip, instead of 2 turns multiplied by movement speed\n" +
 				"_-_ Minor visual changes to hourglass stasis effect\n" +
+				"_-_ Styli can now be used on known uncursed armor\n" +
 				"_-_ Potion of Storm Clouds no longer triggers traps when thrown",
 
 				"_Misc:_\n" +
@@ -261,27 +178,39 @@ public class v2_X_Changes {
 				"_-_ Single wraiths can now spawn adjacent to their spawning cell if it is blocked\n" +
 				"_-_ Added a little game log text when shopkeepers flee\n" +
 				"_-_ Reduced the maximum size of some trap-filled rooms\n" +
+				"_-_ Toxic gas rooms can no longer contain extra traps\n" +
 				"_-_ Updated internal code libraries\n" +
 				"_-_ Made slight tweaks to tutorial functionality\n" +
 				"_-_ Added a new buff icon for wand-based buffs\n" +
-				"_-_ Updated translations\n" +
+				"_-_ ShatteredPD is now categorized as a game on Android devices\n" +
+				"_-_ Updated translations and translator credits\n" +
 				"_-_ Added dev commentary for v1.4.0"));
 
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+		changes.addButton(new ChangeButton(ChangeIcons.V061_BUGFIX, Messages.get(ChangesScene.class, "bugfixes"),
 				"Fixed the following bugs:\n" +
 				"_Highlights:_\n" +
 				"_-_ Hall of Heroes pages 5-10 not syncing via Google Play Games on Google Play version\n" +
 				"_-_ Incorrect behaviour when game is force-closed from trinket selection window\n" +
 				"_-_ Scroll of remove curse not being consumed when freeing tormented spirits\n" +
 				"_-_ Sleeping enemies not being alerted by allies in many cases\n" +
-				"\n" +
-				"_Misc:_\n" +
-				"_-_ Various rare crash bugs\n" +
-				"_-_ Various minor visual and textual errors\n" +
-				"_-_ Surface victory badges not being added to the rankings screen\n" +
-				"_-_ Very rare cases of players getting outside of boss arenas\n" +
-				"_-_ Settings defaulting to audio tab and not languages tab when user is using a language with an incomplete translation",
-				
+				"_-_ Shopkeepers often failing to clear gasses from their shops\n" +
+				"_-_ Ripper Demons refusing to leap onto enemies above chasms\n" +
+				"_-_ Cases where a locked laboratory room could contain the solution potion to a hazard room that contains its key",
+
+				"_Characters:_\n" +
+				"_-_ Final boss not immediately advancing to its final phase in some cases\n" +
+				"_-_ Sad Ghost rarely spawning inside of walls\n" +
+				"_-_ Ally position swapping working when allies are paralyzed\n" +
+				"_-_ DM-300's exposed wire shielding mechanic and the vertigo debuff interacting incorrectly\n" +
+				"_-_ Enemies not properly prioritizing targets based on distance\n" +
+				"_-_ Very specific cases where the hero would refuse to walk onto visible traps\n" +
+				"_-_ Rare cases where the rot heart could be boxed in and not spawn gas\n" +
+				"_-_ Statue enemies reverting to being passive when ascending\n" +
+				"_-_ Wards not being targetable if they were in solid terrain\n" +
+				"_-_ Necromancers not being able to summon their minions in unlocked doors\n" +
+				"_-_ Cases where the gnoll geomancer could be awoken via debuff\n" +
+				"_-_ Spawned mimics (e.g. via cursed wand) not scaling with ascension challenge",
+
 				"_Effects:_\n" +
 				"_-_ Warrior being able to gain extra upgrades on his armor via hero armor transfer effect\n" +
 				"_-_ Earthroot and living rock armor not applying to bone explosion damage\n" +
@@ -290,6 +219,10 @@ public class v2_X_Changes {
 				"_-_ Various situational errors when enemies are transmogrified over chasms\n" +
 				"_-_ Challenge Arena effect briefly persisting between floors\n" +
 				"_-_ Magically slept enemies waking up when terror expires on them\n" +
+				"_-_ Corpse Dust sometimes spawning many wraiths in quick succession after spawning none\n" +
+				"_-_ Assassinate/execute effects not working on enraged brutes\n" +
+				"_-_ Terror not affecting brutes in specific cases\n" +
+				"_-_ Debuffs disappearing from DM-300's pylons on save/load\n" +
 				"_-_ Duelist's Spike ability incorrectly triggering on-kill effects in specific circumstances",
 				
 				"_Items:_\n" +
@@ -299,26 +232,29 @@ public class v2_X_Changes {
 				"_-_ Auto-aim not working correctly with cursed wands\n" +
 				"_-_ Aqua brew always knocking hero up and left when thrown on self\n" +
 				"_-_ Bomb fuses not being visually cleared when boss levels are reset by unblessed ankhs\n" +
-				"_-_ Exotic crystals and Parchment Scrap trinkets affecting levelgen in some cases\n" +
 				"_-_ Helpful darts dealing damage to allies in rare cases\n" +
+				"_-_ Specific cases where beacon of returning could place the hero inside of closed doors\n" +
 				"_-_ Tipped dart cleaning window showing 'clean all' and 'clean one' even with just 1 dart\n" +
+				"_-_ Specific cases where one scroll of transmutation couldn't be used on another\n" +
 				"_-_ Death via a reclaimed trap not counting as dying to your own magic item",
-				
-				"_Characters:_\n" +
-				"_-_ Final boss not immediately advancing to its final phase in some cases\n" +
-				"_-_ Sad Ghost rarely spawning inside of walls\n" +
-				"_-_ Ally position swapping working when allies are paralyzed\n" +
-				"_-_ DM-300's exposed wire shielding mechanic and the vertigo debuff interacting incorrectly\n" +
-				"_-_ Brutes not being affected by terror in specific cases\n" +
-				"_-_ Enemies not properly prioritizing targets based on distance\n" +
-				"_-_ Very specific cases where the hero would refuse to walk onto visible traps\n" +
-				"_-_ Ripper Demons refusing to leap onto enemies above chasms"));
+
+				"_Misc:_\n" +
+				"_-_ Various rare crash bugs\n" +
+				"_-_ Various minor visual and textual errors\n" +
+				"_-_ Rare cases of levelgen hanging\n" +
+				"_-_ Game log spam during the tutorial in specific cases\n" +
+				"_-_ Surface victory badges not being added to the rankings screen\n" +
+				"_-_ Very rare cases of players getting outside of boss arenas\n" +
+				"_-_ Direction compass not pointing to exit after defeating Tengu\n" +
+				"_-_ Split alchemy guide not updating with inventory state in various cases\n" +
+				"_-_ Settings defaulting to audio tab and not languages tab when user is using a language with an incomplete translation\n" +
+				"_-_ Magic well note entries not being cleared if there are two wells in a level"));
 
 		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.CLOVER), "Trinket Buffs",
+		changes.addButton( new ChangeButton( ChangeIcons.V25_CLOVER, "Trinket Buffs",
 				"I'm handing out buffs to several trinkets that are underperforming:\n" +
 				"\n" +
 				"_- 13 Leaf Clover_ upgrade cost up, but it now only affect the hero's damage rolls. It no longer applies to armor or enemy attacks. This should preserve the intended chaos of the effect without making enemies way more dangerous.\n" +
@@ -326,7 +262,7 @@ public class v2_X_Changes {
 				"_- Wondrous Resin_'s bonus cursed wand effects are now always neutral or positive.\n" +
 				"_- Mimic Tooth_ now boosts loot from all mimics."));
 
-		changes.addButton( new ChangeButton(HeroSprite.avatar(HeroClass.DUELIST, 1), "Duelist Buffs",
+		changes.addButton( new ChangeButton( ChangeIcons.V20_DUELIST_CLOTH, "Duelist Buffs",
 				"The Duelist is doing much better balance-wise since v2.4.0, but there are various specific abilities that are getting boosts this update:\n" +
 				"\n" +
 				"Weapon Abilities:\n" +
@@ -341,7 +277,7 @@ public class v2_X_Changes {
 				"_- Precise Assault_ accuracy bonus increased to 2x/5x/inf., up from 2x/4x/8x.\n" +
 				"_- Expose Weakness_ talent now applies weakness as well as vulnerable."));
 
-		changes.addButton( new ChangeButton(HeroSprite.avatar(HeroClass.DUELIST, 4), "Monk Buffs",
+		changes.addButton( new ChangeButton( ChangeIcons.V20_DUELIST_SCALE, "Monk Buffs",
 				"v2.4.0's Duelist buffs were mainly focused on weapon abilities, which mainly benefit the Champion, so it makes sense that the Monk has fallen a little behind. I'm giving out several buffs and mechanics changes to boost the Monk back up, which should improve every ability she has, except meditate.\n" +
 				"\n" +
 				"_-_ Removed ability cooldowns entirely, except for flurry which has a 1 turn cooldown\n" +
@@ -353,7 +289,7 @@ public class v2_X_Changes {
 				"_- Unencumbered Spirit_ energy gain changed to 50%/75%/100% from 40%/80%/120%\n" +
 				"_- Combined Energy_ is now more permissive and reduces charge use by 1, instead of 50%"));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.UNSTABLE_SPELL), "Other Buffs",
+		changes.addButton( new ChangeButton( ChangeIcons.V25_UNSTABLE_SPELL, "Other Buffs",
 				"_- Wand Preservation_ talent now always succeeds, no longer grants arcane resin on failure, and is limited to 1 use at +1, and 1 use per level at +2. \n" +
 				"_- Rogue's foresight_ talent trigger chance increased to 75% at +1 and 100% at +2, up from 60% and 90%.\n" +
 				"_- Hold Fast_ talent now grants 1-2 armor per level, up from 0-2.\n" +
@@ -366,21 +302,20 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.NEGATIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.BOMB), "Bomb Identification",
-				"This is actually an exploit fix, but I'm listing the change here for clarity. Explosions will now avoid destroying any equipment, previously they would destroy un-upgraded equipment only. This led to some players purposefully blowing up un-identified items to see if they were upgraded.\n" +
-				"\n" +
-				"I've been hesitant to change this functionality as I know it lessened inventory congestion, but after taking in feedback during the beta it's become clear to me that some players were relying on it to effectively avoid ever equipping unidentified items. Apologies for letting this persist for so long, I would have removed this exploit much sooner had I known how dependant some players were on it.\n" +
-				"\n" +
-				"I am, however, considering some compensation changes to bombs (to make them more useful for their intended purpose), and to other items to lessen the risk of trying on unidentified gear a bit."));
-
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.MOSSY_CLUMP), "Mossy Clump & Grassy Floors",
+		changes.addButton( new ChangeButton( ChangeIcons.V25_MOSSY_CLUMP, "Mossy Clump & Grassy Floors",
 				"The Mossy Clump is still far and away the strongest trinket, despite several nerfs since adding it. At this point it's clear the value of that trinket is more reflective of how powerful grassy floors are, rather than the trinket itself.\n" +
 				"\n" +
 				"So, I'm nerfing the drop-rate of dew from grassy floors by 50%, meaning that they will generate 2x as much dew as a regular floor on average, down from 4x. Seed drops from these floor are unaffected.\n" +
 				"\n" +
-				"This reduces the bonus dew granted by the mossy clump by 67%, which should hopefully bring it more in-line with other trinket. I've also reduced the upgrade cost of the mossy clump to compensate."));
+				"This reduces the bonus dew granted by the mossy clump by 67%, which should hopefully bring it more in-line with other trinket."));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.WHIP), "Other Item Nerfs",
+		changes.addButton( new ChangeButton( ChangeIcons.V25_STONE_AGGRESSION, "Stone of Aggression",
+				"_Stones of Aggression_ were meant to have some use during boss fights, but currently they're too strong in that case, especially with many challenges enabled:\n" +
+				"\n" +
+				"_-_ Bosses now take 1/2 damage from their minions when affected by aggression, the final boss specifically takes 1/4 damage.\n" +
+				"_-_ Aggression duration vs. regular enemies up to 20 turns, from 5."));
+
+		changes.addButton( new ChangeButton( ChangeIcons.V21_WHIP, "Other Item Nerfs",
 				"_- Whip's Lash Ability_ bonus damage reduced to 0%, from +20%. Ability still guarantees a hit on every target.\n" +
 				"\n" +
 				"_- Ring of Haste_ bonus speed per level reduced to 17.5% from 20%.\n" +
@@ -402,26 +337,26 @@ public class v2_X_Changes {
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(Icons.get(Icons.SHPX), "Developer Commentary",
+		changes.addButton( new ChangeButton(ChangeIcons.V074_SHPX, "Developer Commentary",
 				"_-_ Released May 15th, 2024\n" +
 				"_-_ 118 days after Shattered v2.3.0\n\n" +
-				"Dev commentary will be added here in the future."));
+				"More dev commentary will be added here in the next major update"));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.RAT_SKULL), "Trinkets!",
+		changes.addButton( new ChangeButton( ChangeIcons.V24_RAT_SKULL, "Trinkets!",
 				"_A new category of item has been added: Trinkets!_\n" +
 				"\n" +
 				"Trinkets are a new item type produced and upgraded via alchemical energy, and are more about tweaking gameplay variables than giving direct power or utility.\n" +
 				"\n" +
 				"Look out for a trinket catalyst in the early stages of the game, which you can use at the first alchemy pot to produce one of three trinket options. There are _11 trinkets in total_."));
 
-		changes.addButton( new ChangeButton(Icons.get(Icons.STAIRS), "New Rooms",
+		changes.addButton( new ChangeButton(ChangeIcons.V061_STAIRS, "New Rooms",
 				"_New standard rooms have been added to the various regions of the game!_\n" +
 				"\n" +
 				"This includes one totally new room per region, and two new variants of entrance/exit rooms per region. Rooms that are mostly empty rectangles are now much less common, and there's a bunch of variety for which rooms can have entrance/exit stairs in them.\n" +
 				"\n" +
 				"Entrance rooms are now also capable of merging with other rooms in a dungeon floor, but there are some guarantees so that enemies won't ever be near you right after descending to a new floor."));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.PUMPKIN_PIE), "More Holiday Items",
+		changes.addButton( new ChangeButton( ChangeIcons.V24_PUMPKIN_PIE, "More Holiday Items",
 				"_I've added more holiday items for the rest of 2024!_\n" +
 				"\n" +
 				"Expect to see some new temporary holiday overrides for cornish pasties for:\n" +
@@ -438,7 +373,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(HeroSprite.avatar(HeroClass.DUELIST, 6), "Duelist Weapon Abilities",
+		changes.addButton( new ChangeButton( ChangeIcons.V20_DUELIST_HEROARM, "Duelist Weapon Abilities",
 				"I'm making some overarching changes to the Duelist's weapon abilities, to make them stronger and feel more impactful:\n" +
 				"_-_ Weapon ability charge speed down by 33%\n" +
 				"_-_ Weapon ability charge cap reduced to 2-8, from 3-10\n" +
@@ -451,7 +386,7 @@ public class v2_X_Changes {
 				"_-_ Champion's two weapons now share a charge count, but Champion gets boosted max charges and charge speed.\n" +
 				"_-_ Champion's secondary charge talent has been replaced with a new talent that encourages varied ability use."));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.ENERGY), "Alchemy Changes",
+		changes.addButton( new ChangeButton( ChangeIcons.V11_ENERGY, "Alchemy Changes",
 				"I've made a bunch of changes to the alchemy system to streamline things and complement the addition of trinkets:\n" +
 				"\n" +
 				"_-_ Catalysts have been removed entirely, recipes that required one now simply cost 8 or 9 more energy.\n" +
@@ -463,7 +398,7 @@ public class v2_X_Changes {
 				"\n" +
 				"Various specific alchemy items have also received changes to their energy cost, output quantity, or mechanics. Check the buffs and nerfs section for more details on those."));
 
-		changes.addButton( new ChangeButton(Icons.get(Icons.TALENT), "Talent Changes",
+		changes.addButton( new ChangeButton( ChangeIcons.V090_TALENTS, "Talent Changes",
 				"Duelist talents have been changed to account for adjustments to weapon charge mechanics:\n" +
 				"_- Aggressive Barrier_ shielding increased to 3/5 from 3, threshold changed to 50% from 40%/60%.\n" +
 				"_- Focused Meal_ charge boost reduced to 0.67/1 from 1/1.5.\n" +
@@ -477,7 +412,7 @@ public class v2_X_Changes {
 				"Plus one change to an unnecessarily complex T1 talent:\n" +
 				"_- Hearty Meal_ has been simplified, now just has one threshold at 30% HP"));
 
-		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
+		changes.addButton(new ChangeButton(ChangeIcons.V081_MISC, Messages.get(ChangesScene.class, "misc"),
 				"_Highlights:_\n" +
 				"_-_ Potion and Scroll talents can now trigger from elixirs, brews, and spells\n" +
 				"_-_ Ankh resurrection window now warns if two items aren't selected\n" +
@@ -501,7 +436,7 @@ public class v2_X_Changes {
 				"_-_ Removed the power saver setting on Android 4.4+ devices, if the user hadn't already enabled it.\n" +
 				"(Power saver was always meant for very old Android devices. It gives no real benefit for more modern ones.)"));
 
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+		changes.addButton(new ChangeButton(ChangeIcons.V061_BUGFIX, Messages.get(ChangesScene.class, "bugfixes"),
 				"Fixed the following bugs:\n" +
 				"_Highlights:_\n" +
 				"_-_ Ruins rooms in the last region using incorrect wall shapes since v2.2.0\n" +
@@ -567,7 +502,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.RAPIER), "Weapon Ability Buffs",
+		changes.addButton( new ChangeButton( ChangeIcons.V24_RAPIER, "Weapon Ability Buffs",
 				"_- Lunge_ damage up\n" +
 				"_- Cleave_ damage up, is now instant if it kills, but no longer chains\n" +
 				"_- Heavy Blow_ damage up, non-surprise penalty changed to no bonus damage\n" +
@@ -585,7 +520,7 @@ public class v2_X_Changes {
 				"_- Retribution_ is now instant if it kills\n" +
 				"_- Brawler's Stance_ now deals bonus damage, reduces recharge speed instead of costing charge per hit"));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.ALCHEMIZE), "Alchemy Buffs",
+		changes.addButton( new ChangeButton( ChangeIcons.V24_ALCHEMIZE, "Alchemy Buffs",
 				"Firstly, many items have received simple energy cost reductions. Note that all energy costs are after accounting for catalyst removal\n" +
 				"_- Caustic Brew_ cost down to 1 from 2\n" +
 				"_- Blizzard Brew_ cost down to 8 from 11\n" +
@@ -605,7 +540,7 @@ public class v2_X_Changes {
 				"_- Alchemize_ has a new recipe, it is now much cheaper to make\n" +
 				"_- Summon Elemental_ cost down to 10 from 15 and buffing the spell now persists after use"));
 
-		changes.addButton( new ChangeButton(new Image(new GhostSprite()), "Ghost and Blacksmith Enchantments",
+		changes.addButton( new ChangeButton( ChangeIcons.PD_GHOST, "Ghost and Blacksmith Enchantments",
 				"I've given a slight boost to the rewards of the Ghost quest and Blacksmith's smith reward, aimed at making enchantments/glyphs more likely. this should make these rewards a bit more interesting more often.\n" +
 				"\n" +
 				"_-_ Ghost reward enchant rate up to 20% from 10%\n" +
@@ -615,7 +550,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.NEGATIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.ELIXIR_MIGHT), "Alchemy Nerfs",
+		changes.addButton( new ChangeButton( ChangeIcons.V24_ELIXIR_MIGHT, "Alchemy Nerfs",
 				"_- Elixir of Might_ cost up to 16 from 14 (after account for catalyst removal)\n" +
 				"_- Phase Shift_ cost down to 10 from 13, but output quantity down to 6 from 8"));
 
@@ -631,20 +566,23 @@ public class v2_X_Changes {
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(Icons.get(Icons.SHPX), "Developer Commentary",
+		changes.addButton( new ChangeButton(ChangeIcons.V074_SHPX, "Developer Commentary",
 				"_-_ Released January 18th, 2024\n" +
 				"_-_ 92 days after Shattered v2.2.0\n\n" +
-				"v2.3.0 was originally going to contain two new variants for the caves quest, but after a longer than expected dev cycle plus the holidays, I opted to release v2.3.0 with just one more variant and move on to other content for a while, instead of spending even more time on the caves quest.\n\n" +
-				"More Dev commentary will be added here in the future."));
+				"2.3.0 was originally going to contain two new variants for the caves quest, but after a longer than expected dev cycle plus the holidays, I opted to release v2.3.0 with just one more variant and move on to other content for a while, instead of spending even more time on the caves quest.\n" +
+						"\n" +
+						"While I'm very happy with how both caves quest variants turned out, I decided to actively try to reduce the amount of extra work quest variants will cause me in future quest additions.\n" +
+						"\n" +
+						"This update also included several fun extra items. I had always intended to add more holiday items after the initial ones in v0.3.3, but it ended up taking me a bit more than 9 years years to do it! Remains in Shattered have also been heavily nerfed from their original form, and so I wanted to add something new to them to try and improve their feel."));
 
-		changes.addButton(new ChangeButton(new Image(new GnollGuardSprite()), "Gnoll Caves Quest",
+		changes.addButton(new ChangeButton( ChangeIcons.V23_GNOLL_GUARD, "Gnoll Caves Quest",
 				"_A second variant has been added to the caves quest!_\n" +
 				"\n" +
 				"This variant features _gnolls and earth-moving magic._ Expect to spend a bit more time digging, as this environment features collapsed walls, boulders, and angry gnolls wielding spears and earth-moving devices. Their magic is quite chaotic, so be ready to dodge and possibly get the gnolls caught in their own attacks.\n" +
 				"\n" +
 				"The boss for this variant is the _gnoll geomancer,_ an experienced gnoll with access to lots of mobility and earth-moving power."));
 
-		changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.REMAINS), "New Remains Items",
+		changes.addButton(new ChangeButton( ChangeIcons.V062_REMAINS, "New Remains Items",
 				"_Heroes remains now contain a new unique item that varies based on the class of the hero that died._\n" +
 				"\n" +
 				"These items are single use consumables that provide a small benefit that's themed after the hero who died. There are also two new badges relating to these items.\n" +
@@ -653,7 +591,7 @@ public class v2_X_Changes {
 				"\n" +
 				"Additionally, remains which contain a stackable item from the previous run now cap the quantity of that item at 3."));
 
-		changes.addButton(new ChangeButton(new ItemSprite(ItemSpriteSheet.CANDY_CANE), "New Holiday Items",
+		changes.addButton(new ChangeButton( ChangeIcons.V23_CANDY_CANE, "New Holiday Items",
 				"Shattered has had little holiday food items that temporarily replace cornish pasties ever since 2016, but only for Halloween and the Winter Holidays. Throughout 2024 you'll see a bunch of new items for more holidays through the year, which all have different tiny bonus effects when eaten.\n" +
 				"\n" +
 				"For now I have implemented items for Lunar New Years and Easter, with more on the way in future updates.\n" +
@@ -664,14 +602,14 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
-		changes.addButton(new ChangeButton(Icons.get(Icons.BUFFS), "Floating Text Icons",
+		changes.addButton(new ChangeButton( ChangeIcons.V23_ARROWS, "Floating Text Icons",
 				"The little bits of floating text that appear above characters to indicate damage, positive effects, and currency gain now have tiny icons to indicate the type!\n" +
 				"\n" +
 				"For damage, it is now shown whether the damage is physical, magical, or if it comes from a particular debuff or DOT effect. There are separate physical damage icons depending on whether armor reduces the incoming damage. Armor never reduces magical or DOT damage. Damage text is also now always red,  warnings and negative effects are always orange.\n" +
 				"\n" +
 				"For positive effects, icons are now shown for healing, shielding, and exp gain. Loads of healing or shielding effects which previously didn't show floating text now do as well."));
 
-		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
+		changes.addButton(new ChangeButton(ChangeIcons.V081_MISC, Messages.get(ChangesScene.class, "misc"),
 				"_Highlights:_\n" +
 				"_-_ Improved the sprites for Armored Brutes and DM-201s\n" +
 				"_-_ The troll blacksmith no longer works on cursed items\n" +
@@ -721,7 +659,7 @@ public class v2_X_Changes {
 				"_-_ Slightly improved the layout of shop rooms when many items are present\n" +
 				"_-_ Updated a link in the game's credits"));
 
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+		changes.addButton(new ChangeButton(ChangeIcons.V061_BUGFIX, Messages.get(ChangesScene.class, "bugfixes"),
 				"Fixed the following bugs:\n" +
 				"_Highlights:_\n" +
 				"_-_ Enemies continuing to fight each other after amok expires in many cases\n" +
@@ -799,7 +737,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
-		changes.addButton(new ChangeButton(Icons.TALENT.get(), "Hero Abilities",
+		changes.addButton(new ChangeButton( ChangeIcons.V090_TALENTS, "Hero Abilities",
 				"No nerfs this time, and just a couple targeted buffs to hero abilities/talents.\n" +
 				"\n" +
 				"_- Rogue's Foresight_ talent trigger chance increased to 60% at +1 and 90% at +2, up from 50% at +1 and 75% at +2.\n" +
@@ -818,21 +756,26 @@ public class v2_X_Changes {
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(Icons.get(Icons.SHPX), "Developer Commentary",
+		changes.addButton( new ChangeButton(ChangeIcons.V074_SHPX, "Developer Commentary",
 				"_-_ Released October 18th, 2023\n" +
-				"_-_ 138 days after Shattered v2.1.0\n\n" +
-				"Dev commentary will be added here in the future."));
+				"_-_ 138 days after Shattered v2.1.0\n" +
+				"\n" +
+				"v2.2.0 was the first quest overhaul update since v0.3.2 in 2015!\n" +
+				"\n" +
+				"This highlights just how much Shattered has grown since those days. A quest overhaul has gone from adding a couple rooms and enemy types to an entire new sub-region of the game with its own unique gameplay. It ended up taking me a lot longer to make this new quest than I initially expected though, as I had trouble settling on a design.\n" +
+				"\n" +
+				"Originally this quest was going to be much more focused on mining and ores, like Motherlode, Dome Keeper, or Miner Disturbance. In early testing this just wasn't fun though. I eventually realized that I was trying to jam a different game into the middle of Shattered, but instead I needed to use mining to enhance Shattered's existing gameplay. That led to the current quest design, which I think works quite well!"));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.PICKAXE), "New Blacksmith Quest!",
+		changes.addButton( new ChangeButton( ChangeIcons.V22_PICKAXE, "New Blacksmith Quest!",
 				"_Shattered Pixel Dungeon's blacksmith quest has been completely redone!_\n" +
-						"\n" +
-						"_The quest now takes place in a new sublevel, with one entirely new environment, and two more on the way in v2.3!_ Each environment has its own set of hazards, level generation logic, and unique enemies.\n" +
-						"\n" +
-						"_The quest area features a new mining mechanic._ In addition to digging out gold, you can tunnel through walls to create new routes and evade hazards.\n" +
-						"\n" +
-						"_The quest rewards are also massively expanded._ The better you do on the quest, the more favor you'll earn in exchange for blacksmithing services. The old reforge option is still available, but there are several new options too."));
+				"\n" +
+				"_The quest now takes place in a new sublevel, with one entirely new environment, and two more on the way in v2.3!_ Each environment has its own set of hazards, level generation logic, and unique enemies.\n" +
+				"\n" +
+				"_The quest area features a new mining mechanic._ In addition to digging out gold, you can tunnel through walls to create new routes and evade hazards.\n" +
+				"\n" +
+				"_The quest rewards are also massively expanded._ The better you do on the quest, the more favor you'll earn in exchange for blacksmithing services. The old reforge option is still available, but there are several new options too."));
 
-		changes.addButton( new ChangeButton(Icons.AUDIO.get(), "New Music!",
+		changes.addButton( new ChangeButton( ChangeIcons.V10_AUDIO, "New Music!",
 				"_Shattered Pixel Dungeon's soundtrack has been massively expanded!_ The game's soundtrack runtime has doubled in total, with almost 20 minutes of new audio by the game's composer: Kristjan Thomas Haaristo.\n" +
 				"\n" +
 				"_The existing region tracks have been expanded._ Each track now has three total segments, instead of two. All of these segments play in a semi-random pattern, increasing variety for the game's more frequently heard music.\n" +
@@ -841,7 +784,7 @@ public class v2_X_Changes {
 				"\n" +
 				"_Lastly, four 'finale' tracks have been added._ Three of these tracks play when you are about to defeat the game's three later bosses, and one plays right before securing victory (either grabbing the amulet or reaching the end of ascension)."));
 
-		changes.addButton( new ChangeButton(new Image(new WandmakerSprite()), "Prison Quest Changes",
+		changes.addButton( new ChangeButton( ChangeIcons.V22_WANDMAKER, "Prison Quest Changes",
 				"The game's second quest has received a bunch of adjustments to make it more engaging.\n" +
 				"\n" +
 				"_Corpse Dust Quest:_ The mass grave room now always spawns at least a bit away from the entrance, and wraith spawning is more consistent.\n" +
@@ -860,7 +803,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(Icons.CHALLENGE_COLOR.get(), "Hostile Champions",
+		changes.addButton( new ChangeButton( ChangeIcons.V064_CHALLENGES, "Hostile Champions",
 				"I've decided to make some changes to the hostile champions challenge, to better balance the difficulty of each of the champion types, and address some common feedback about difficulty spikes:\n" +
 				"\n" +
 				"_- Projecting Champions_ now have +3 attack range, instead of infinite range\n" +
@@ -870,7 +813,7 @@ public class v2_X_Changes {
 				"_- Giant Champions_ now take 80% reduced damage, up from 75%\n" +
 				"_- Antimagic Champions_ now take 50% reduced damage, up from 25%"));
 
-		changes.addButton( new ChangeButton(Icons.TALENT.get(), "T2 Potion and Scroll Talents",
+		changes.addButton( new ChangeButton( ChangeIcons.V090_TALENTS, "T2 Potion and Scroll Talents",
 				"The T2 potion and scroll talents have been reworked to trigger on a more broad range of items, and have had their names and effects changed as a result:\n" +
 				"\n" +
 				"_-_ Warrior, Huntress, and Duelist talents now trigger on any potion, not just potions of healing. Their effects are doubled when using potions of strength or experience.\n" +
@@ -884,7 +827,7 @@ public class v2_X_Changes {
 				"\n" +
 				"_-_ The Mage now also has a new T3 talent: 'desperate power', as the above change effectively moves the Empowering Scrolls talent to T2."));
 
-		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
+		changes.addButton(new ChangeButton(ChangeIcons.V081_MISC, Messages.get(ChangesScene.class, "misc"),
 				"_Highlights:_\n" +
 				"_-_ Shopkeepers now warn the player once before fleeing when they are damaged\n" +
 				"_-_ The sad ghost now always spawns at the end of the level it appears in and does not leave the exit room\n" +
@@ -909,7 +852,7 @@ public class v2_X_Changes {
 				"_-_ Removed support for Android Instant Apps\n" +
 				"_-_ Updated some links in the game's credits"));
 
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+		changes.addButton(new ChangeButton(ChangeIcons.V061_BUGFIX, Messages.get(ChangesScene.class, "bugfixes"),
 				"Fixed the following bugs:\n" +
 				"_Highlights:_\n" +
 				"_-_ Some items being incorrectly consumed when the game is closed while they are being used\n" +
@@ -967,7 +910,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.DIRK), "Weapon Ability Buffs",
+		changes.addButton( new ChangeButton( ChangeIcons.V22_DIRK, "Weapon Ability Buffs",
 				"Weapon abilities are overall in a much better place now, but there are still a couple that need a boost:\n" +
 				"\n" +
 				"_- Sneak_ ability (Dagger, Dirk, and Assassin's blade) reworked. Now lets the Duelist instantly blink for 6/5/4 tiles of distance and grants 1 turn of invisibility, instead of granting 10/8/6 turns of invisibility.\n" +
@@ -980,7 +923,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.NEGATIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.KATANA), "Weapon & Curse Nerfs",
+		changes.addButton( new ChangeButton( ChangeIcons.V22_KATANA, "Weapon & Curse Nerfs",
 				"Relatively mild changes here, a slight nerf to a new weapon and nerfs to the two most harmful curses (i.e. they are less detrimental now).\n" +
 				"\n" +
 				"_- Katana_ blocking down to 0-3 from 0-4\n" +
@@ -990,7 +933,7 @@ public class v2_X_Changes {
 				"\n" +
 				"_- Corrosion_ curse turns of ooze down to 10, from 20."));
 
-		changes.addButton( new ChangeButton(Icons.get(Icons.STAIRS), "Ascension Challenge",
+		changes.addButton( new ChangeButton(ChangeIcons.V061_STAIRS, "Ascension Challenge",
 				"The combination of enemy stat scaling adjustments and the switch to boosting HP instead of reducing damage taken has made the earlier floors in the ascension challenge a little harder than intended, so I'm scaling things back:\n" +
 				"\n" +
 				"_-_ Reverted the v2.1.0 increase to enemy stats in the caves and prison during the ascension challenge."));
@@ -1007,26 +950,31 @@ public class v2_X_Changes {
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(Icons.get(Icons.SHPX), "Developer Commentary",
+		changes.addButton( new ChangeButton(ChangeIcons.V074_SHPX, "Developer Commentary",
 				"_-_ Released June 2nd, 2023\n" +
-				"_-_ 83 days after Shattered v2.0.0\n\n" +
-				"Dev commentary will be added here in the future."));
+				"_-_ 83 days after Shattered v2.0.0\n" +
+				"\n" +
+				"v2.1.0 was meant as a fairly quick followup to v2.0.0, aimed mainly at making followup tweaks to the Duelist.\n" +
+				"\n" +
+				"This was the first major wave of Duelist buffs, aimed mostly at boosting weapon abilities. Many of her abilities had various requirements/downsides, and weren't suitably rewarding to compensate. This led to the basic no-drawbacks cleave ability being the strongest one by quite a bit. The Duelist ended up needing further help, but this update went a long way toward fixing the biggest complaint I had received, that the Duelist felt too dependent on finding specific weapons.\n" +
+				"\n" +
+				"There was also a variety of side content in this update, most of which was varied, but some of it was targeted at more Duelist variety by adding a few more weapons."));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.WAR_SCYTHE), "New Weapons!",
+		changes.addButton( new ChangeButton( ChangeIcons.V21_SCYTHE, "New Weapons!",
 				"Three new weapons have been added to the game!\n" +
 				"\n" +
 				"_The Katana_ is a tier-4 defensive weapon that was designed to respond to the common feedback point of players wanting a higher tier weapon with the rapier's ability. Just like with her rapier, the Duelist can _lunge_ at enemies with a katana, dealing bonus damage.\n" +
 				"\n" +
 				"_The Sickle_ and _War Scythe_ are T2 and T5 weapons that trade in some accuracy for increased base damage. The Duelist can use the _harvest_ ability with these weapons, which deals a large amount of bleeding instead of direct damage, but costs 2 charges."));
 
-		changes.addButton( new ChangeButton(new Image(new TormentedSpiritSprite()), "New Exotic Enemies",
+		changes.addButton( new ChangeButton( ChangeIcons.V21_TORMENTED_SPIRIT, "New Exotic Enemies",
 				"An exotic variant has been added for wraiths and piranhas!\n" +
 				"\n" +
 				"_Tormented Spirits_ replace 1 in every 100 wraiths, and have higher stats along with a unique interaction. Using a scroll of remove curse on these spirits will save them from their curse, peacefully defeating them and giving you an uncursed equipment reward!\n" +
 				"\n" +
 				"_Phantom Piranhas_ replace 1 in every 50 piranhas, and can teleport either to attack or retreat whenever they take damage. They're harder to kill, but give valuable phantom meat as a drop, instead of regular mystery meat. They're also a reference to the phantom fish quest from the original Pixel Dungeon!"));
 
-		changes.addButton( new ChangeButton(new Image(new ShopkeeperSprite()), "Shop Interface Improvements",
+		changes.addButton( new ChangeButton( ChangeIcons.V21_SHOPKEEPER, "Shop Interface Improvements",
 				"_A new UI has been added when interacting with shopkeepers._ This UI lets you talk with them and buyback the 3 most recently sold items!\n" +
 				"\n" +
 				"I plan to add more dialogue and region-specific shopkeepers in the future, but for now there is a bit of dialogue that varies based on the region and the hero you're playing as."));
@@ -1035,18 +983,18 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(Icons.STAIRS.get(), "Ascension Changes",
+		changes.addButton( new ChangeButton( ChangeIcons.V061_STAIRS, "Ascension Changes",
 				"I've made several changes to the Ascension challenge to make it more fun, mesh better with some items/effects, and to smooth out its difficulty:\n\n" +
 				"_-_ Enemies now gain increased max HP during ascent, instead of damage resistance\n\n" +
 				"_-_ Enemies now grant exp to the hero up to level 30 while ascending\n" +
 				"_-_ Even at level 30, on-exp-gain effects will now still trigger as long as the amulet's curse is being weakened\n\n" +
 				"_-_ Increased enemy stat scaling in the earlier floors of the caves and prison"));
 
-		changes.addButton( new ChangeButton(new TalentIcon(Talent.PRECISE_ASSAULT), "Precise Assault",
+		changes.addButton( new ChangeButton( ChangeIcons.V21_PRECISE_ASSAULT, "Precise Assault",
 				"The _Lightweight Charge_ talent has been completely replaced with a new talent: _Precise Assault_. This new talent grants a big accuracy boost for 1 attack after using a weapon ability, encouraging interweaving special and regular attacks.\n\n" +
 				"Lightweight Charge is removed as it was originally designed much earlier in the Duelist's development process. This was before mechanics like Swift Equip, the Champion's Dual wielding, or Unencumbered Spirit existed. Those mechanics do a much better job of encouraging using abilities on lower tier weapons."));
 
-		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
+		changes.addButton(new ChangeButton(ChangeIcons.V081_MISC, Messages.get(ChangesScene.class, "misc"),
 				"_Highlights:_\n" +
 				"_-_ Enemy misses now interrupt the hero, just like hits\n" +
 				"_-_ Boss regen limits are now less permissive, especially with badder bosses enabled\n" +
@@ -1080,7 +1028,7 @@ public class v2_X_Changes {
 				"_-_ Heroes remains can now appear in more cases, but always contain 10 gold in challenge or seeded runs\n" +
 				"_-_ Added a setting for screen shake intensity"));
 
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+		changes.addButton(new ChangeButton(ChangeIcons.V061_BUGFIX, Messages.get(ChangesScene.class, "bugfixes"),
 				"Fixed the following bugs:\n" +
 				"_Highlights:_\n" +
 				"_-_ Various rare crash errors\n" +
@@ -1145,7 +1093,7 @@ public class v2_X_Changes {
 
 				"_v2.1.3:_\n" +
 				"_-_ Various rare crash and hang bugs\n" +
-				"_-_ Weaker healing effects overiding stronger ones\n" +
+				"_-_ Weaker healing effects overriding stronger ones\n" +
 				"_-_ Divine inspiration potion not being cancellable if it was already identified\n" +
 				"_-_ Very rare cases where tapping a location wouldn't cause the hero to move\n" +
 				"_-_ Armored brutes blocking more damage than intended\n" +
@@ -1161,11 +1109,11 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new Whip(),
+		changes.addButton( new ChangeButton( ChangeIcons.V21_WHIP, "Whip",
 				"The whip is getting a quick and simple buff, as it is performing a bit worse than its T3 counterparts:\n\n" +
 				"_- Whip_ base damage increased to 3-15 from 3-12"));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.WAR_HAMMER), "Weapon Abilities",
+		changes.addButton( new ChangeButton( ChangeIcons.V21_WARHAMMER, "Weapon Abilities",
 				"Several of the Duelist's weapon abilities have not been performing as well as I'd hoped, even after the buffs in v2.0.1. It seems that I've overestimated how much the drawbacks I added have held back many of these abilities. My hope with these changes is to better balance other abilities versus the simple-yet-effective Cleave.\n" +
 				"\n" +
 				"Firstly, some abilities need relatively little help:\n" +
@@ -1192,7 +1140,7 @@ public class v2_X_Changes {
 				"_-_ Now triggers on-hit effects in a 5x5 AOE\n" +
 				"_-_ Harmful on-hit effects now only apply to enemies in the AOE, and positive effects only apply to allies."));
 
-		changes.addButton( new ChangeButton(HeroSprite.avatar(HeroClass.DUELIST, 2), "Duelist Subclasses",
+		changes.addButton( new ChangeButton( ChangeIcons.V21_DUELIST_LEATHER, "Duelist Subclasses",
 				"The Duelist's subclasses have not had as many problems as her weapon abilities, so the changes here are more incremental. I've been more generous with the Monk, in anticipation that the weapon ability changes will be more beneficial to the Champion:\n\n" +
 				"_Champion:_\n" +
 				"_- Combined Lethality_ HP threshold up to 13/27/40 from 10/20/30\n\n" +
@@ -1204,7 +1152,7 @@ public class v2_X_Changes {
 				"_-_ Dash range boost up to +3 from +2\n" +
 				"_-_ Dragon Kick damage boost up to +50% from +33%"));
 
-		changes.addButton( new ChangeButton(HeroSprite.avatar(HeroClass.DUELIST, 6), "Duelist Armor Abilities",
+		changes.addButton( new ChangeButton( ChangeIcons.V20_DUELIST_HEROARM, "Duelist Armor Abilities",
 				"Armor abilities are also getting more minor changes, targeted at specific talents and the elemental strike ability:\n\n" +
 				"_- Elemental Strike_ AOE effect base power increased by 20-33%, varying by enchantment\n\n" +
 				"_- Expose Weakness_ turns of vulnerable increased to 2/4/6/8 from 1/2/3/4\n\n" +
@@ -1214,7 +1162,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.NEGATIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(HeroSprite.avatar(HeroClass.DUELIST, 4), "Duelist Nerfs",
+		changes.addButton( new ChangeButton( ChangeIcons.V20_DUELIST_SCALE, "Duelist Nerfs",
 				"The Duelist is also receiving a few very specific nerfs in v2.1.0:\n\n" +
 				"_- Meditate_ now grants the monk 8 turns of recharging, down from 10.\n" +
 				"_- Meditate_ recharging now begins after meditation ends, instead of when it starts.\n\n" +
@@ -1232,28 +1180,32 @@ public class v2_X_Changes {
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(Icons.get(Icons.SHPX), "Developer Commentary",
+		changes.addButton( new ChangeButton(ChangeIcons.V074_SHPX, "Developer Commentary",
 				"_-_ Released March 13th, 2023\n" +
 				"_-_ 160 days after Shattered v1.4.0\n" +
 				"_-_ 413 days after Shattered v1.0.0\n" +
 				"\n" +
-				"Dev commentary will be added here in the next major update."));
+				"v2.0.0 introduced Shattered Pixel Dungeon's first ever new hero: the Duelist!\n" +
+				"\n" +
+				"The Duelist was the first of two new heroes that were focused around active abilities, as opposed to focusing on equipment power (Warrior and Mage), or environment interaction (Rogue and Huntress). I see v2.0 as the beginning of another new era in Shattered's development, as after focusing on new platforms during most of v1.X, game updates instead started focusing on big content expansions.\n" +
+				"\n" +
+				"Unfortunately the Duelist ended up releasing quite weak. I overestimated how well an ability focused hero would perform versus the existing heroes. I erred much more on the side of making the next hero stronger, and so far that seems to be working out quite well."));
 
-		changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.DUELIST, 1), HeroClass.DUELIST.title(),
+		changes.addButton(new ChangeButton( ChangeIcons.V20_DUELIST_CLOTH, HeroClass.DUELIST.title(),
 				"_Shattered Pixel Dungeon has a new playable character!!_\n" +
 				"\n" +
 				"The Duelist is an entire new hero class, _with a unique ability for every weapon in the game!_ She can be unlocked by earning a simple badge for equipping a T2 or higher weapon without a strength penalty. However, for existing players who already have a win she is unlocked by default!\n" +
 				"\n" +
 				"I want the Duelist to provide more interesting gameplay options for melee weapon focused builds, that have previously been fairly plain and simple compared to builds using other items."));
 
-		changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.DUELIST, 4), "Duelist Subclasses",
+		changes.addButton(new ChangeButton( ChangeIcons.V20_DUELIST_SCALE, "Duelist Subclasses",
 				"_The Duelist has two subclasses, with 3 more talents each!_\n" +
 				"\n" +
 				"_The Champion_ is a master of melee weapons who can equip a secondary weapon in addition to her primary one!\n" +
 				"\n" +
 				"_The Monk_ is a master of physical technique. As she defeats enemies, she gains energy which can be used on a variety of defensive and utlity-focused abilities."));
 
-		changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.DUELIST, 6), "Duelist Armor Abilities",
+		changes.addButton(new ChangeButton( ChangeIcons.V20_DUELIST_HEROARM, "Duelist Armor Abilities",
 				"_The Duelist has three lategame armor abilities, with 3 more talents each!_\n" +
 				"\n" +
 				"_Challenge_ compels an enemy to fight the Duelist while all other enemies are temporarily frozen in time.\n" +
@@ -1266,7 +1218,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
-		changes.addButton(new ChangeButton(Icons.get(Icons.STAIRS), "Ascension Challenge",
+		changes.addButton(new ChangeButton(ChangeIcons.V061_STAIRS, "Ascension Challenge",
 				"I'm making a few adjustments to the ascension challenge to slightly increase the difficulty of some regions, while also reducing the pressure to kill enemies a little bit:\n" +
 				"\n" +
 				"_-_ Enemies to kill per floor reduced to 2 from 2.5. Thresholds for all amulet debuff effects adjusted to compensate\n" +
@@ -1281,7 +1233,7 @@ public class v2_X_Changes {
 				"_- Gnoll & Snake_ stat boost up to 9x from 7x\n" +
 				"_- Rat_ stat boost up to 10x from 8x"));
 
-		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
+		changes.addButton(new ChangeButton(ChangeIcons.V081_MISC, Messages.get(ChangesScene.class, "misc"),
 				"_Highlights:_\n" +
 				"_-_ The game now remembers if the player removes the waterskin from their quickslot right after starting a run\n" +
 				"_-_ The damage warning vfx now always interrupts the hero, regardless of any other factors\n" +
@@ -1338,7 +1290,7 @@ public class v2_X_Changes {
 				"_-_ The changes scene now shows a warning if the user is not viewing it in English.\n" +
 				"_-_ Liquid metal value increased to 1 from 0.5."));
 
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+		changes.addButton(new ChangeButton(ChangeIcons.V061_BUGFIX, Messages.get(ChangesScene.class, "bugfixes"),
 				"Fixed the following bugs:\n" +
 				"_Highlights:_\n" +
 				"_-_ Various rare crash and freeze errors\n" +
@@ -1431,7 +1383,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.RING_TOPAZ), "Item Buffs",
+		changes.addButton( new ChangeButton( ChangeIcons.V061_RING_TOPAZ, "Item Buffs",
 				"I'm making several buffs to various items that could be performing a little better:\n" +
 				"\n" +
 				"_- Pickaxe_ can now benefit from upgrades enchantments and augmentation, if you feel like using it for fun.\n" +
@@ -1445,7 +1397,7 @@ public class v2_X_Changes {
 				"_- Horn of Plenty_ now gains 2 levels from being fed a pasty, up from 1.5\n" +
 				"_- Horn of Plenty_ now gains 4 levels from being fed a meat pie, up from 3"));
 
-		changes.addButton( new ChangeButton(HeroSprite.avatar(HeroClass.MAGE, 6), "Hero Buffs",
+		changes.addButton( new ChangeButton( ChangeIcons.V063_MAGE_HEROARM, "Hero Buffs",
 				"A couple buffs to the two worst performing armor abilities/talents:\n" +
 				"\n" +
 				"_- Shrug it Off_ now just directly boosts the damage resistance from endure to 60/68/74/80%, instead of reducing max damage taken\n" +
@@ -1458,7 +1410,7 @@ public class v2_X_Changes {
 		changes.hardlight(CharSprite.NEGATIVE);
 		changeInfos.add(changes);
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.ROUND_SHIELD), "Major Item Nerfs",
+		changes.addButton( new ChangeButton( ChangeIcons.V20_ROUNDSHIELD, "Major Item Nerfs",
 				"I'm also making several significant nerfs to items with standout winrates this update:\n" +
 				"\n" +
 				"_- Round Shield_ blocking per level reduced to 0-1 from 0-2, base damage increased to 3-12 from 3-10\n" +
@@ -1479,7 +1431,7 @@ public class v2_X_Changes {
 				"\n" +
 				"_- Ethereal chains_ charge from gaining exp reduced by 40%"));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.RING_RUBY), "Smaller Item Nerfs",
+		changes.addButton( new ChangeButton( ChangeIcons.V071_RING_RUBY, "Smaller Item Nerfs",
 				"There are also some more minor nerfs to items that are just doing a bit too well:\n" +
 				"\n" +
 				"_- Ring of Furor_ attack speed boost per level down to 9.05% from 10.5%\n" +
@@ -1492,7 +1444,7 @@ public class v2_X_Changes {
 				"\n" +
 				"_- Wand of Fireblast_ base damage reduced to 1-2 from 1-6 when spending 1 charge, and 2-8 from 2-12 when spending 2 charges. This is to offset the relatively high amount of DOT the wand deals at low levels."));
 
-		changes.addButton( new ChangeButton(HeroSprite.avatar(HeroClass.ROGUE, 6), "Hero Nerfs",
+		changes.addButton( new ChangeButton( ChangeIcons.V062_ROGUE_HEROARM, "Hero Nerfs",
 				"T1 Talents:\n" +
 				"_-_ Warrior's T1 ID talent renamed from _Armsmaster's Intuition_ to _Veteran's Intuition_. The talent now focuses more on armor, to contrast with the Duelist.\n" +
 				"\n" +

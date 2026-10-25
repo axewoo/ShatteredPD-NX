@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -110,7 +110,7 @@ public class MasterThievesArmband extends Artifact {
 		}
 	}
 
-	private CellSelector.Listener targeter = new CellSelector.Listener(){
+	public CellSelector.Listener targeter = new CellSelector.Listener(){
 
 		@Override
 		public void onSelect(Integer target) {
@@ -165,7 +165,7 @@ public class MasterThievesArmband extends Artifact {
 								} else {
 									if (loot.doPickUp(curUser)) {
 										//item collection happens instantly
-										curUser.spend(-TIME_TO_PICK_UP);
+										curUser.spend(-loot.pickupDelay());
 									} else {
 										Dungeon.level.drop(loot, curUser.pos).sprite.drop();
 									}
@@ -179,6 +179,8 @@ public class MasterThievesArmband extends Artifact {
 
 							Buff.prolong(ch, Blindness.class, debuffDuration);
 							Buff.prolong(ch, Cripple.class, debuffDuration);
+
+							artifactProc(ch, visiblyUpgraded(), 1);
 
 							charge--;
 							exp += 3;
@@ -207,6 +209,7 @@ public class MasterThievesArmband extends Artifact {
 
 	//counter of 0 for attempt but no success, 1 for success
 	public static class StolenTracker extends CounterBuff {
+		{ revivePersists = true; }
 		public void setItemStolen(boolean stolen){ if (stolen) countUp(1); }
 		public boolean itemWasStolen(){ return count() > 0; }
 	}
@@ -261,6 +264,7 @@ public class MasterThievesArmband extends Artifact {
 		public boolean act() {
 			if (cursed && Dungeon.gold > 0 && Random.Int(5) == 0){
 				Dungeon.gold--;
+				updateQuickslot();
 			}
 
 			spend(TICK);
@@ -271,7 +275,8 @@ public class MasterThievesArmband extends Artifact {
 			if (cursed || target.buff(MagicImmune.class) != null) return;
 
 			if (charge < chargeCap){
-				float chargeGain = 3f * levelPortion;
+				//3 charges per hero lvl at +0, scaling to 4.5 per lvl at +10
+				float chargeGain = (3f + 0.15f*level()) * levelPortion;
 				chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);
 
 				partialCharge += chargeGain;

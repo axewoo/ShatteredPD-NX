@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 package com.shatteredpixel.shatteredpixeldungeon.journal;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.PowerOfMany;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.ShadowClone;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.rogue.SmokeBomb;
@@ -51,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.FetidRat;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Ghoul;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Gnoll;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollExile;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGeomancer;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollGuard;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GnollSapper;
@@ -60,6 +62,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Goo;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.GreatCrab;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Guard;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.HermitCrab;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Monk;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Necromancer;
@@ -96,7 +99,17 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.PrismaticImage;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.RatKing;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Sheep;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Shopkeeper;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.VaultLaser;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.VaultSentry;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Wandmaker;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.quest.vault.VaultBossElemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.quest.vault.VaultDM100;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.quest.vault.VaultDM200;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.quest.vault.VaultElemental;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.quest.vault.VaultGhoul;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.quest.vault.VaultGolem;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.quest.vault.VaultShaman;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.quest.vault.VaultSkeleton;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
 import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
@@ -219,7 +232,7 @@ public enum Bestiary {
 
 		UNIVERSAL.addEntities(Wraith.class, Piranha.class, Mimic.class, GoldenMimic.class, EbonyMimic.class, Statue.class, GuardianTrap.Guardian.class, SentryRoom.Sentry.class);
 
-		RARE.addEntities(Albino.class, CausticSlime.class,
+		RARE.addEntities(Albino.class, GnollExile.class, HermitCrab.class, CausticSlime.class,
 				Bandit.class, SpectralNecromancer.class,
 				ArmoredBrute.class, DM201.class,
 				Elemental.ChaosElemental.class, Senior.class,
@@ -228,14 +241,15 @@ public enum Bestiary {
 
 		QUEST.addEntities(FetidRat.class, GnollTrickster.class, GreatCrab.class,
 				Elemental.NewbornFireElemental.class, RotLasher.class, RotHeart.class,
-				CrystalWisp.class, CrystalGuardian.class, CrystalSpire.class, GnollGuard.class, GnollSapper.class, GnollGeomancer.class);
+				CrystalWisp.class, CrystalGuardian.class, CrystalSpire.class, GnollGuard.class, GnollSapper.class, GnollGeomancer.class,
+				VaultSkeleton.class, VaultDM100.class, VaultShaman.class, VaultDM200.class, VaultSentry.class, VaultLaser.class, VaultBossElemental.class);
 
 		NEUTRAL.addEntities(Ghost.class, RatKing.class, Shopkeeper.class, Wandmaker.class, Blacksmith.class, Imp.class, Sheep.class, Bee.class);
 
 		ALLY.addEntities(MirrorImage.class, PrismaticImage.class,
 				DriedRose.GhostHero.class,
 				WandOfWarding.Ward.class, WandOfWarding.Ward.WardSentry.class, WandOfLivingEarth.EarthGuardian.class,
-				ShadowClone.ShadowAlly.class, SmokeBomb.NinjaLog.class, SpiritHawk.HawkAlly.class);
+				ShadowClone.ShadowAlly.class, SmokeBomb.NinjaLog.class, SpiritHawk.HawkAlly.class, PowerOfMany.LightAlly.class);
 
 		TRAP.addEntities(WornDartTrap.class, PoisonDartTrap.class, DisintegrationTrap.class, GatewayTrap.class,
 				ChillingTrap.class, BurningTrap.class, ShockingTrap.class, AlarmTrap.class, GrippingTrap.class, TeleportationTrap.class, OozeTrap.class,
@@ -256,21 +270,27 @@ public enum Bestiary {
 	//some mobs and traps have different internal classes in some cases, so need to convert here
 	private static final HashMap<Class<?>, Class<?>> classConversions = new HashMap<>();
 	static {
-		classConversions.put(CorpseDust.DustWraith.class,      Wraith.class);
+		classConversions.put(CorpseDust.DustWraith.class,       Wraith.class);
 
-		classConversions.put(Necromancer.NecroSkeleton.class,  Skeleton.class);
+		classConversions.put(Necromancer.NecroSkeleton.class,   Skeleton.class);
 
-		classConversions.put(TenguDartTrap.class,              PoisonDartTrap.class);
-		classConversions.put(GnollRockfallTrap.class,          RockfallTrap.class);
+		classConversions.put(TenguDartTrap.class,               PoisonDartTrap.class);
+		classConversions.put(GnollRockfallTrap.class,           RockfallTrap.class);
 
-		classConversions.put(DwarfKing.DKGhoul.class,          Ghoul.class);
-		classConversions.put(DwarfKing.DKWarlock.class,        Warlock.class);
-		classConversions.put(DwarfKing.DKMonk.class,           Monk.class);
-		classConversions.put(DwarfKing.DKGolem.class,          Golem.class);
+		classConversions.put(VaultGhoul.class,                  Ghoul.class);
+		classConversions.put(VaultElemental.Fire.class,         Elemental.FireElemental.class);
+		classConversions.put(VaultElemental.Frost.class,        Elemental.FrostElemental.class);
+		classConversions.put(VaultElemental.Shock.class,        Elemental.ShockElemental.class);
+		classConversions.put(VaultGolem.class,                  Golem.class);
 
-		classConversions.put(YogDzewa.YogRipper.class,         RipperDemon.class);
-		classConversions.put(YogDzewa.YogEye.class,            Eye.class);
-		classConversions.put(YogDzewa.YogScorpio.class,        Scorpio.class);
+		classConversions.put(DwarfKing.DKGhoul.class,           Ghoul.class);
+		classConversions.put(DwarfKing.DKWarlock.class,         Warlock.class);
+		classConversions.put(DwarfKing.DKMonk.class,            Monk.class);
+		classConversions.put(DwarfKing.DKGolem.class,           Golem.class);
+
+		classConversions.put(YogDzewa.YogRipper.class,          RipperDemon.class);
+		classConversions.put(YogDzewa.YogEye.class,             Eye.class);
+		classConversions.put(YogDzewa.YogScorpio.class,         Scorpio.class);
 	}
 
 	public static boolean isSeen(Class<?> cls){

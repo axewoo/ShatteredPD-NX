@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,9 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Terror;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.PowerOfMany;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.huntress.SpiritHawk;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.spells.DivineSense;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
@@ -67,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.VaultLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.SpecialRoom;
@@ -172,20 +175,12 @@ public class Dungeon {
 				}
 				
 			}
-
-			//pre-v2.2.0 saves
-			if (Dungeon.version < 750
-					&& Dungeon.isChallenged(Challenges.NO_SCROLLS)
-					&& UPGRADE_SCROLLS.count > 0){
-				//we now count SOU fully, and just don't drop every 2nd one
-				UPGRADE_SCROLLS.count += UPGRADE_SCROLLS.count-1;
-			}
 		}
 
 	}
 
 	public static int challenges;
-	public static int mobsToChampion;
+	public static float mobsToChampion;
 
 	public static Hero hero;
 	public static Level level;
@@ -216,6 +211,7 @@ public class Dungeon {
 	public static boolean dailyReplay;
 	public static String customSeedText = "";
 	public static long seed;
+	public static long lastPlayed;
 
 	//we initialize the seed separately so that things like interlevelscene can access it early
 	public static void initSeed(){
@@ -238,7 +234,7 @@ public class Dungeon {
 
 		initialVersion = version = Game.versionCode;
 		challenges = SPDSettings.challenges();
-		mobsToChampion = -1;
+		mobsToChampion = 1;
 
 		Actor.clear();
 		Actor.resetNextID();
@@ -365,6 +361,12 @@ public class Dungeon {
 				case 14:
 					level = new MiningLevel();
 					break;
+				case 16:
+				case 17:
+				case 18:
+				case 19:
+					level = new VaultLevel();
+					break;
 				default:
 					level = new DeadEndLevel();
 			}
@@ -452,7 +454,7 @@ public class Dungeon {
 
 	public static boolean interfloorTeleportAllowed(){
 		if (Dungeon.level.locked
-				|| Dungeon.level instanceof MiningLevel
+				|| Dungeon.level instanceof MiningLevel || Dungeon.level instanceof VaultLevel
 				|| (Dungeon.hero != null && Dungeon.hero.belongings.getItem(Amulet.class) != null)){
 			return false;
 		}
@@ -602,6 +604,7 @@ public class Dungeon {
 	private static final String CUSTOM_SEED	= "custom_seed";
 	private static final String DAILY	    = "daily";
 	private static final String DAILY_REPLAY= "daily_replay";
+	private static final String LAST_PLAYED = "last_played";
 	private static final String CHALLENGES	= "challenges";
 	private static final String MOBS_TO_CHAMPION	= "mobs_to_champion";
 	private static final String HERO		= "hero";
@@ -628,6 +631,7 @@ public class Dungeon {
 			bundle.put( CUSTOM_SEED, customSeedText );
 			bundle.put( DAILY, daily );
 			bundle.put( DAILY_REPLAY, dailyReplay );
+			bundle.put( LAST_PLAYED, lastPlayed = Game.realTime);
 			bundle.put( CHALLENGES, challenges );
 			bundle.put( MOBS_TO_CHAMPION, mobsToChampion );
 			bundle.put( HERO, hero );
@@ -720,13 +724,7 @@ public class Dungeon {
 		
 		Bundle bundle = FileUtils.bundleFromFile( GamesInProgress.gameFile( save ) );
 
-		//pre-1.3.0 saves
-		if (bundle.contains(INIT_VER)){
-			initialVersion = bundle.getInt( INIT_VER );
-		} else {
-			initialVersion = bundle.getInt( VERSION );
-		}
-
+		initialVersion = bundle.getInt( INIT_VER );
 		version = bundle.getInt( VERSION );
 
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();
@@ -742,7 +740,7 @@ public class Dungeon {
 		Toolbar.swappedQuickslots = false;
 
 		Dungeon.challenges = bundle.getInt( CHALLENGES );
-		Dungeon.mobsToChampion = bundle.getInt( MOBS_TO_CHAMPION );
+		Dungeon.mobsToChampion = bundle.getFloat( MOBS_TO_CHAMPION );
 		
 		Dungeon.level = null;
 		Dungeon.depth = -1;
@@ -780,6 +778,26 @@ public class Dungeon {
 			
 			SpecialRoom.restoreRoomsFromBundle(bundle);
 			SecretRoom.restoreRoomsFromBundle(bundle);
+
+			generatedLevels.clear();
+			for (int i : bundle.getIntArray(GENERATED_LEVELS)){
+				generatedLevels.add(i);
+			}
+
+			droppedItems = new SparseArray<>();
+			for (int i=1; i <= 26; i++) {
+
+				//dropped items
+				ArrayList<Item> items = new ArrayList<>();
+				if (bundle.contains(Messages.format( DROPPED, i )))
+					for (Bundlable b : bundle.getCollection( Messages.format( DROPPED, i ) ) ) {
+						items.add( (Item)b );
+					}
+				if (!items.isEmpty()) {
+					droppedItems.put( i, items );
+				}
+
+			}
 		}
 		
 		Bundle badges = bundle.getBundle(BADGES);
@@ -803,32 +821,6 @@ public class Dungeon {
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
 
-		generatedLevels.clear();
-		if (bundle.contains(GENERATED_LEVELS)){
-			for (int i : bundle.getIntArray(GENERATED_LEVELS)){
-				generatedLevels.add(i);
-			}
-		//pre-v2.1.1 saves
-		} else  {
-			for (int i = 1; i <= Statistics.deepestFloor; i++){
-				generatedLevels.add(i);
-			}
-		}
-
-		droppedItems = new SparseArray<>();
-		for (int i=1; i <= 26; i++) {
-			
-			//dropped items
-			ArrayList<Item> items = new ArrayList<>();
-			if (bundle.contains(Messages.format( DROPPED, i )))
-				for (Bundlable b : bundle.getCollection( Messages.format( DROPPED, i ) ) ) {
-					items.add( (Item)b );
-				}
-			if (!items.isEmpty()) {
-				droppedItems.put( i, items );
-			}
-
-		}
 	}
 	
 	public static Level loadLevel( int save ) throws IOException {
@@ -871,6 +863,7 @@ public class Dungeon {
 		info.customSeed = bundle.getString( CUSTOM_SEED );
 		info.daily = bundle.getBoolean( DAILY );
 		info.dailyReplay = bundle.getBoolean( DAILY_REPLAY );
+		info.lastPlayed = bundle.getLong( LAST_PLAYED );
 
 		Hero.preview( info, bundle.getBundle( HERO ) );
 		Statistics.preview( info, bundle );
@@ -896,7 +889,7 @@ public class Dungeon {
 
 	public static void updateLevelExplored(){
 		if (branch == 0 && level instanceof RegularLevel && !Dungeon.bossLevel()){
-			Statistics.floorsExplored.put( depth, level.isLevelExplored(depth));
+			Statistics.floorsExplored.put( depth, level.levelExplorePercent(depth));
 		}
 	}
 
@@ -946,9 +939,12 @@ public class Dungeon {
 	
 		GameScene.updateFog(l, t, width, height);
 
-		if (hero.buff(MindVision.class) != null){
+		if (hero.buff(MindVision.class) != null || hero.buff(DivineSense.DivineSenseTracker.class) != null){
 			for (Mob m : level.mobs.toArray(new Mob[0])){
 				if (m instanceof Mimic && m.alignment == Char.Alignment.NEUTRAL && ((Mimic) m).stealthy()){
+					continue;
+				}
+				if (Char.hasProp(m, Char.Property.OBJECT)){
 					continue;
 				}
 
@@ -971,7 +967,7 @@ public class Dungeon {
 
 		for (TalismanOfForesight.CharAwareness c : hero.buffs(TalismanOfForesight.CharAwareness.class)){
 			Char ch = (Char) Actor.findById(c.charID);
-			if (ch == null || !ch.isAlive()) continue;
+			if (ch == null || !ch.isAlive() || Char.hasProp(ch, Char.Property.OBJECT)) continue;
 			BArray.or( level.visited, level.heroFOV, ch.pos - 1 - level.width(), 3, level.visited );
 			BArray.or( level.visited, level.heroFOV, ch.pos - 1, 3, level.visited );
 			BArray.or( level.visited, level.heroFOV, ch.pos - 1 + level.width(), 3, level.visited );
@@ -997,7 +993,8 @@ public class Dungeon {
 		for (Char ch : Actor.chars()){
 			if (ch instanceof WandOfWarding.Ward
 					|| ch instanceof WandOfRegrowth.Lotus
-					|| ch instanceof SpiritHawk.HawkAlly){
+					|| ch instanceof SpiritHawk.HawkAlly
+					|| ch.buff(PowerOfMany.PowerBuff.class) != null){
 				x = ch.pos % level.width();
 				y = ch.pos / level.width();
 
@@ -1078,24 +1075,22 @@ public class Dungeon {
 		return PathFinder.getStep( ch.pos, to, findPassable(ch, pass, visible, chars) );
 
 	}
-	
+
 	public static int flee( Char ch, int from, boolean[] pass, boolean[] visible, boolean chars ) {
 		boolean[] passable = findPassable(ch, pass, visible, false, true);
 		passable[ch.pos] = true;
 
-		//only consider other chars impassable if our retreat step may collide with them
-		if (chars) {
-			for (Char c : Actor.chars()) {
-				if (c.pos == from || Dungeon.level.adjacent(c.pos, ch.pos)) {
-					passable[c.pos] = false;
-				}
-			}
-		}
-
 		//chars affected by terror have a shorter lookahead and can't approach the fear source
 		boolean canApproachFromPos = ch.buff(Terror.class) == null && ch.buff(Dread.class) == null;
-		return PathFinder.getStepBack( ch.pos, from, canApproachFromPos ? 8 : 4, passable, canApproachFromPos );
-		
+		int step = PathFinder.getStepBack( ch.pos, from, canApproachFromPos ? 8 : 4, passable, canApproachFromPos );
+
+		//only consider chars impassable if our retreat step runs into them
+		while (step != -1 && Actor.findChar(step) != null && chars){
+			passable[step] = false;
+			step = PathFinder.getStepBack( ch.pos, from, canApproachFromPos ? 8 : 4, passable, canApproachFromPos );
+		}
+		return step;
+
 	}
 
 }

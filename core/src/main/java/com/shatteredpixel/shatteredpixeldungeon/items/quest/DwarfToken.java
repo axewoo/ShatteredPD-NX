@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,12 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.quest;
 
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 
 public class DwarfToken extends Item {
 	
@@ -41,5 +45,25 @@ public class DwarfToken extends Item {
 	@Override
 	public boolean isIdentified() {
 		return true;
+	}
+
+	@Override
+	public boolean doPickUp(Hero hero, int pos) {
+		if (Imp.Quest.mirrorUsed){
+			GLog.i(Messages.get(this, "discard"));
+			hero.next();
+			return true;
+		}
+		return super.doPickUp(hero, pos);
+	}
+
+	@Override
+	public String desc() {
+		if (Imp.Quest.isOld()){
+			return Messages.get(this, "desc_old");
+		} else {
+			return super.desc();
+		}
+
 	}
 }

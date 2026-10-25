@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
-public class DM100 extends Mob implements Callback {
+public class DM100 extends Mob {
 
 	private static final float TIME_TO_ZAP	= 1f;
 	
@@ -125,11 +125,6 @@ public class DM100 extends Mob implements Callback {
 				return true;
 			}
 		}
-	}
-	
-	@Override
-	public void call() {
-		next();
 	}
 	
 }

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,6 +77,18 @@ public class GnollGuard extends Mob {
 	public void damage(int dmg, Object src) {
 		if (hasSapper()) dmg /= 4;
 		super.damage(dmg, src);
+	}
+
+	@Override
+	public int incomingDOT() {
+		if (!needsIncomingDOTUpdate){
+			return cachedIncomingDOT;
+		} else {
+			int DOT = super.incomingDOT();
+			if (hasSapper()) DOT /= 4;
+			cachedIncomingDOT = DOT;
+			return cachedIncomingDOT;
+		}
 	}
 
 	@Override

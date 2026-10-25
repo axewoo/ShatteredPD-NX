@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ public class VialOfBlood extends Trinket {
 
 	@Override
 	protected int upgradeEnergyCost() {
-		//6 -> 8(14) -> 10(24) -> 12(36)
+		//6 -> 6(12) -> 8(20) -> 10(30)
 		return 6+2*level();
 	}
 
@@ -47,13 +47,17 @@ public class VialOfBlood extends Trinket {
 		} else {
 			return Messages.get(this,
 					"typical_stats_desc",
-					Messages.decimalFormat("#.##", 100*(totalHealMultiplier(buffedLvl())-1f)),
-					Integer.toString(maxHealPerTurn(buffedLvl())));
+					Messages.decimalFormat("#.##", 100*(totalHealMultiplier(0)-1f)),
+					Integer.toString(maxHealPerTurn(0)));
 		}
 	}
 
 	public static boolean delayBurstHealing(){
 		return trinketLevel(VialOfBlood.class) != -1;
+	}
+
+	public static int bloodVialLevel(){
+		return trinketLevel(VialOfBlood.class);
 	}
 
 	public static float totalHealMultiplier(){

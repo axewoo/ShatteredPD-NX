@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,6 +167,7 @@ public class Rapier extends MeleeWeapon {
 						charger.charges--;
 						charger.partialCharge++;
 					}
+					hero.belongings.abilityWeapon = null;
 					updateQuickslot();
 					GLog.w(Messages.get(Rapier.class, "ability_no_target"));
 					hero.spendAndNext(1/hero.speed());

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,36 +69,39 @@ public abstract class Builder {
 				}
 			}
 			
-			//iterate through all rooms we are overlapping, and find the closest one
+			//iterate through all rooms we are overlapping, and find the closest one to the start
 			Room closestRoom = null;
-			int closestDiff = Integer.MAX_VALUE;
-			boolean inside = true;
-			int curDiff = 0;
+			float closestDiff = Integer.MAX_VALUE;
+			boolean inside;
+			Point curDiff = new Point();
 			for (Room curRoom : colliding){
-				
+				curDiff.x = curDiff.y = 0;
+				inside = true;
+
 				if (start.x <= curRoom.left){
 					inside = false;
-					curDiff += curRoom.left - start.x;
+					curDiff.x = curRoom.left - start.x;
 				} else if (start.x >= curRoom.right){
 					inside = false;
-					curDiff += start.x - curRoom.right;
+					curDiff.x = start.x - curRoom.right;
 				}
 			
 				if (start.y <= curRoom.top){
 					inside = false;
-					curDiff += curRoom.top - start.y;
+					curDiff.y = curRoom.top - start.y;
 				} else if (start.y >= curRoom.bottom){
 					inside = false;
-					curDiff += start.y - curRoom.bottom;
+					curDiff.y = start.y - curRoom.bottom;
 				}
-				
+
+				//start point is inside of room, return empty space
 				if (inside){
 					space.set(start.x, start.y, start.x, start.y);
 					return space;
 				}
 				
-				if (curDiff < closestDiff){
-					closestDiff = curDiff;
+				if (curDiff.length() < closestDiff){
+					closestDiff = curDiff.length();
 					closestRoom = curRoom;
 				}
 			

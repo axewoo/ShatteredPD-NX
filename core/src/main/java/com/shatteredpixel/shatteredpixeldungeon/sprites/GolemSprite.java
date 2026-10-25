@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.sprites;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Golem;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.quest.vault.VaultGolem;
 import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ElmoParticle;
 import com.watabou.noosa.TextureFilm;
@@ -113,7 +114,9 @@ public class GolemSprite extends MobSprite {
 				new Callback() {
 					@Override
 					public void call() {
-						((Golem)ch).onZapComplete();
+						if (ch instanceof Golem) {
+							((Golem) ch).onZapComplete();
+						}
 					}
 				} );
 		Sample.INSTANCE.play( Assets.Sounds.ZAP );

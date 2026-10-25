@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
+import com.shatteredpixel.shatteredpixeldungeon.effects.TargetedCell;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -43,7 +44,7 @@ public abstract class Actor implements Bundlable {
 
 	//default priority values for general actor categories
 	//note that some specific actors pick more specific values
-	//e.g. a buff acting after all normal buffs might have priority BUFF_PRIO + 1
+	//e.g. a buff acting before all normal buffs might have priority BUFF_PRIO + 1
 	protected static final int VFX_PRIO    = 100;   //visual effects take priority
 	protected static final int HERO_PRIO   = 0;     //positive is before hero, negative after
 	protected static final int BLOB_PRIO   = -10;   //blobs act after hero, before mobs
@@ -91,11 +92,21 @@ public abstract class Actor implements Bundlable {
 	}
 
 	public void clearTime() {
-		time = 0;
+		spendConstant(-Actor.now());
+		if (this instanceof Char){
+			for (Buff b : ((Char) this).buffs()){
+				b.spendConstant(-Actor.now());
+			}
+		}
 	}
 
 	public void timeToNow() {
 		time = now;
+	}
+
+	//used when now is being cleared as a part of static fixTime()
+	public void fixTime(float decrement){
+		time -= decrement;
 	}
 	
 	protected void diactivate() {
@@ -176,8 +187,9 @@ public abstract class Actor implements Bundlable {
 		//So that turns always align with a whole number
 		min = (int)min;
 		for (Actor a : all) {
-			a.time -= min;
+			a.fixTime(min);
 		}
+		TargetedCell.fixTime(min);
 
 		if (Dungeon.hero != null && all.contains( Dungeon.hero )) {
 			Statistics.duration += min;
@@ -246,15 +258,17 @@ public abstract class Actor implements Bundlable {
 			if (!interrupted && !Game.switchingScene()) {
 				float earliest = Float.MAX_VALUE;
 
-				for (Actor actor : all) {
-					
-					//some actors will always go before others if time is equal.
-					if (actor.time < earliest ||
-							actor.time == earliest && (current == null || actor.actPriority > current.actPriority)) {
-						earliest = actor.time;
-						current = actor;
+				synchronized (Actor.class) {
+					for (Actor actor : all) {
+
+						//some actors will always go before others if time is equal.
+						if (actor.time < earliest ||
+								actor.time == earliest && (current == null || actor.actPriority > current.actPriority)) {
+							earliest = actor.time;
+							current = actor;
+						}
+
 					}
-					
 				}
 			}
 

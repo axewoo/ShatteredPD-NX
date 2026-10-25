@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Pushing;
 import com.shatteredpixel.shatteredpixeldungeon.effects.TargetedCell;
 import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.RipperSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
@@ -218,6 +219,8 @@ public class RipperDemon extends Mob {
 			enemySeen = enemyInFOV;
 			if (enemyInFOV && !isCharmedBy( enemy ) && canAttack( enemy )) {
 
+				recentlyAttackedBy.clear();
+				target = enemy.pos;
 				return doAttack( enemy );
 
 			} else {
@@ -255,10 +258,11 @@ public class RipperDemon extends Mob {
 						//get ready to leap
 						leapPos = targetPos;
 						//don't want to overly punish players with slow move or attack speed
-						spend(GameMath.gate(attackDelay(), (int)Math.ceil(enemy.cooldown()), 3*attackDelay()));
+						float delay = GameMath.gate(attackDelay(), (int)Math.ceil(enemy.cooldown()), 3*attackDelay());
+						spend(delay);
 						if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[leapPos]){
 							GLog.w(Messages.get(RipperDemon.this, "leap"));
-							sprite.parent.addToBack(new TargetedCell(leapPos, 0xFF0000));
+							GameScene.targetedCell(leapPos, delay);
 							((RipperSprite)sprite).leapPrep( leapPos );
 							Dungeon.hero.interrupt();
 						}

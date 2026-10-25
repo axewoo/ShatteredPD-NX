@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,10 +38,9 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.WarlockSprite;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
-public class Warlock extends Mob implements Callback {
+public class Warlock extends Mob {
 	
 	private static final float TIME_TO_ZAP	= 1f;
 	
@@ -117,6 +116,7 @@ public class Warlock extends Mob implements Callback {
 			
 			int dmg = Random.NormalIntRange( 12, 18 );
 			dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
+
 			enemy.damage( dmg, new DarkBolt() );
 			
 			if (enemy == Dungeon.hero && !enemy.isAlive()) {
@@ -131,11 +131,6 @@ public class Warlock extends Mob implements Callback {
 	
 	public void onZapComplete() {
 		zap();
-		next();
-	}
-	
-	@Override
-	public void call() {
 		next();
 	}
 

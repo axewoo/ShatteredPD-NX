@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.painters;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
+import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.quest.BlacksmithRoom;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.watabou.utils.Random;
@@ -42,13 +43,13 @@ public class CavesPainter extends RegularPainter {
 		for (Room r : rooms) {
 			for (Room n : r.neigbours) {
 				if (!r.connected.containsKey( n )) {
-					mergeRooms(level, r, n, null, Terrain.CHASM);
+					mergeRooms(level, r, n, null, Random.Int(3) == 0 ? Terrain.REGION_DECO : Terrain.CHASM);
 				}
 			}
 		}
 
 		for (Room room : rooms) {
-			if (!(room instanceof StandardRoom)) {
+			if (!(room instanceof StandardRoom) || room instanceof BlacksmithRoom) {
 				continue;
 			}
 			
@@ -59,10 +60,11 @@ public class CavesPainter extends RegularPainter {
 			int s = room.square();
 
 			//for each corner, we have a chance to fill based on room size
-			//but not if filling that corner blocks a connection or places a visible trap next to a wall
+			//but not if filling that corner replaces solid terrain, blocks a connection, or places a visible trap next to a wall
 			if (Random.Int( s ) > 8) {
 				int corner = (room.left + 1) + (room.top + 1) * w;
-				if (map[corner-1] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner-1))
+				if ((Terrain.flags[map[corner]] & Terrain.SOLID) == 0
+						&& map[corner-1] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner-1))
 						&& map[corner-w] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner-w))
 						&& map[corner+1] != Terrain.TRAP && map[corner+w] != Terrain.TRAP) {
 					map[corner] = Terrain.WALL;
@@ -72,7 +74,8 @@ public class CavesPainter extends RegularPainter {
 			
 			if (Random.Int( s ) > 8) {
 				int corner = (room.right - 1) + (room.top + 1) * w;
-				if (map[corner+1] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner+1))
+				if ((Terrain.flags[map[corner]] & Terrain.SOLID) == 0
+						&& map[corner+1] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner+1))
 						&& map[corner-w] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner-w))
 						&& map[corner-1] != Terrain.TRAP && map[corner+w] != Terrain.TRAP) {
 					map[corner] = Terrain.WALL;
@@ -82,7 +85,8 @@ public class CavesPainter extends RegularPainter {
 			
 			if (Random.Int( s ) > 8) {
 				int corner = (room.left + 1) + (room.bottom - 1) * w;
-				if (map[corner-1] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner-1))
+				if ((Terrain.flags[map[corner]] & Terrain.SOLID) == 0
+						&& map[corner-1] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner-1))
 						&& map[corner+w] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner+w))
 						&& map[corner+1] != Terrain.TRAP && map[corner-w] != Terrain.TRAP) {
 					map[corner] = Terrain.WALL;
@@ -92,7 +96,8 @@ public class CavesPainter extends RegularPainter {
 			
 			if (Random.Int( s ) > 8) {
 				int corner = (room.right - 1) + (room.bottom - 1) * w;
-				if (map[corner+1] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner+1))
+				if ((Terrain.flags[map[corner]] & Terrain.SOLID) == 0
+						&& map[corner+1] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner+1))
 						&& map[corner+w] == Terrain.WALL && !room.connected.containsValue(level.cellToPoint(corner+w))
 						&& map[corner-1] != Terrain.TRAP && map[corner-w] != Terrain.TRAP) {
 					map[corner] = Terrain.WALL;

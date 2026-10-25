@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,6 @@ import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -72,26 +71,47 @@ public class LastLevel extends Level {
 	}
 
 	@Override
-	public void create() {
-		super.create();
+	public void buildFlagMaps() {
+		super.buildFlagMaps();
 		for (int i=0; i < length(); i++) {
-			int flags = Terrain.flags[map[i]];
-			if ((flags & Terrain.PIT) != 0){
+			//chasms and tiles below the entrance are always wall
+			if (pit[i] || i > (height-ROOM_TOP+2)*width){
 				passable[i] = avoid[i] = false;
 				solid[i] = true;
 			}
 		}
+	}
+
+	@Override
+	public void cleanWalls() {
+		super.cleanWalls();
 		for (int i = (height-ROOM_TOP+2)*width; i < length; i++){
-			passable[i] = avoid[i] = false;
-			solid[i] = true;
-		}
-		for (int i = (height-ROOM_TOP+1)*width; i < length; i++){
+			//tiles in lower area are always either seen already or not discoverable
 			if (i % width < 4 || i % width > 12 || i >= (length-width)){
 				discoverable[i] = false;
 			} else {
 				visited[i] = true;
 			}
 		}
+	}
+
+	@Override
+	public void updateCellFlags(int cell) {
+		super.updateCellFlags(cell);
+		//chasms and tiles below the entrance are always wall
+		if (pit[cell] || cell > (height-ROOM_TOP+2)*width){
+			passable[cell] = avoid[cell] = false;
+			solid[cell] = true;
+		}
+		//lower tiles also aren't discoverable or always visited
+		if (cell > (height-ROOM_TOP+1)*width){
+			if (cell % width < 4 || cell % width > 12 || cell >= (length-width)){
+				discoverable[cell] = false;
+			} else {
+				visited[cell] = true;
+			}
+		}
+
 	}
 
 	private static final int ROOM_TOP = 10;
@@ -101,7 +121,7 @@ public class LastLevel extends Level {
 
 	@Override
 	protected boolean build() {
-		
+
 		setSize(16, 64);
 		Arrays.fill( map, Terrain.CHASM );
 
@@ -150,12 +170,12 @@ public class LastLevel extends Level {
 
 		return true;
 	}
-	
+
 	@Override
 	public Mob createMob() {
 		return null;
 	}
-	
+
 	@Override
 	protected void createMobs() {
 	}
@@ -200,6 +220,9 @@ public class LastLevel extends Level {
 			case Terrain.STATUE:
 			case Terrain.STATUE_SP:
 				return Messages.get(HallsLevel.class, "statue_name");
+			case Terrain.REGION_DECO:
+			case Terrain.REGION_DECO_ALT:
+				return Messages.get(HallsLevel.class, "region_deco_name");
 			default:
 				return super.tileName( tile );
 		}
@@ -215,6 +238,9 @@ public class LastLevel extends Level {
 				return Messages.get(HallsLevel.class, "statue_desc");
 			case Terrain.BOOKSHELF:
 				return Messages.get(HallsLevel.class, "bookshelf_desc");
+			case Terrain.REGION_DECO:
+			case Terrain.REGION_DECO_ALT:
+				return Messages.get(HallsLevel.class, "region_deco_desc");
 			default:
 				return super.tileDesc( tile );
 		}
@@ -225,29 +251,6 @@ public class LastLevel extends Level {
 		super.addVisuals();
 		HallsLevel.addHallsVisuals(this, visuals);
 		return visuals;
-	}
-
-	@Override
-	public void restoreFromBundle(Bundle bundle) {
-		super.restoreFromBundle(bundle);
-		for (int i=0; i < length(); i++) {
-			int flags = Terrain.flags[map[i]];
-			if ((flags & Terrain.PIT) != 0){
-				passable[i] = avoid[i] = false;
-				solid[i] = true;
-			}
-		}
-		for (int i = (height-ROOM_TOP+2)*width; i < length; i++){
-			passable[i] = avoid[i] = false;
-			solid[i] = true;
-		}
-		for (int i = (height-ROOM_TOP+1)*width; i < length; i++){
-			if (i % width < 4 || i % width > 12 || i >= (length-width)){
-				discoverable[i] = false;
-			} else {
-				visited[i] = true;
-			}
-		}
 	}
 
 	public static class CustomFloor extends CustomTilemap {

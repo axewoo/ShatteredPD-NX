@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,8 +79,11 @@ public class MiningLevelPainter extends CavesPainter {
 
 						for (int j : PathFinder.NEIGHBOURS4){
 							if (level.insideMap(i+j) && map[i+j] != Terrain.WALL){
-								goldPosCandidates.add(i);
-								break;
+								Point o = level.cellToPoint(i+j);
+								if (r.inside(o)) {
+									goldPosCandidates.add(i);
+									break;
+								}
 							}
 						}
 					}

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ public class SummonElemental extends Spell {
 			detach(Dungeon.hero.belongings.backpack);
 			Catalog.countUse(getClass());
 			if (Random.Float() < talentChance){
-				Talent.onScrollUsed(curUser, curUser.pos, talentFactor);
+				Talent.onScrollUsed(curUser, curUser.pos, talentFactor, getClass());
 			}
 
 		} else {
@@ -168,6 +168,12 @@ public class SummonElemental extends Spell {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		if (bundle.contains(SUMMON_CLASS)) summonClass = bundle.getClass(SUMMON_CLASS);
+
+		if (summonClass == Elemental.AllyNewBornElemental.class)    image = ItemSpriteSheet.SUMMON_ELE;
+		if (summonClass == Elemental.FireElemental.class)           image = ItemSpriteSheet.SUMMON_ELE_FIRE;
+		if (summonClass == Elemental.FrostElemental.class)          image = ItemSpriteSheet.SUMMON_ELE_FROST;
+		if (summonClass == Elemental.ShockElemental.class)          image = ItemSpriteSheet.SUMMON_ELE_SHOCK;
+		if (summonClass == Elemental.ChaosElemental.class)          image = ItemSpriteSheet.SUMMON_ELE_CHAOS;
 	}
 
 	public WndBag.ItemSelector selector = new WndBag.ItemSelector() {
@@ -196,21 +202,25 @@ public class SummonElemental extends Spell {
 				Sample.INSTANCE.play(Assets.Sounds.BURNING);
 				curUser.sprite.emitter().burst( FlameParticle.FACTORY, 12 );
 				summonClass = Elemental.FireElemental.class;
+				image = ItemSpriteSheet.SUMMON_ELE_FIRE;
 
 			} else if (item instanceof PotionOfFrost){
 				Sample.INSTANCE.play(Assets.Sounds.SHATTER);
 				curUser.sprite.emitter().burst( MagicMissile.MagicParticle.FACTORY, 12 );
 				summonClass = Elemental.FrostElemental.class;
+				image = ItemSpriteSheet.SUMMON_ELE_FROST;
 
 			} else if (item instanceof ScrollOfRecharging){
 				Sample.INSTANCE.play(Assets.Sounds.ZAP);
 				curUser.sprite.emitter().burst( ShaftParticle.FACTORY, 12 );
 				summonClass = Elemental.ShockElemental.class;
+				image = ItemSpriteSheet.SUMMON_ELE_SHOCK;
 
 			} else if (item instanceof ScrollOfTransmutation){
 				Sample.INSTANCE.play(Assets.Sounds.READ);
 				curUser.sprite.emitter().burst( RainbowParticle.BURST, 12 );
 				summonClass = Elemental.ChaosElemental.class;
+				image = ItemSpriteSheet.SUMMON_ELE_CHAOS;
 			}
 
 			curUser.sprite.operate(curUser.pos);

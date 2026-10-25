@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.painters;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrapMechanism;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Patch;
@@ -181,9 +182,8 @@ public abstract class RegularPainter extends Painter {
 			}
 		}
 	}
-	
-	protected void paintDoors( Level l, ArrayList<Room> rooms ) {
 
+	public float hiddenDoorChance( Level l ){
 		float hiddenDoorChance = 0;
 		if (Dungeon.depth > 1){
 			//chance for a hidden door scales from 2/20 on floor 2 to 20/20 on floor 20
@@ -193,6 +193,12 @@ public abstract class RegularPainter extends Painter {
 			//pull the value of extra secret doors toward 50% on secrets level feel
 			hiddenDoorChance = (0.5f + hiddenDoorChance)/2f;
 		}
+		return hiddenDoorChance;
+	}
+	
+	protected void paintDoors( Level l, ArrayList<Room> rooms ) {
+
+		float hiddenDoorChance = hiddenDoorChance(l);
 
 		HashMap<Room, Room> roomMerges = new HashMap<>();
 
@@ -257,16 +263,17 @@ public abstract class RegularPainter extends Painter {
 						d.type = Room.Door.Type.UNLOCKED;
 					}
 
-					//entrance doors on floor 1 are hidden during tutorial
-					//entrance doors on floor 2 are hidden if the player hasn't picked up 2nd guidebook page
-					if (r.isEntrance() || n.isEntrance()){
-						if ((Dungeon.depth == 1 && SPDSettings.intro())
+				}
+
+				//unlocked entrance doors on floor 1 are hidden during tutorial
+				//unlocked entrance doors on floor 2 are hidden if the player hasn't picked up 2nd guidebook page
+				if (d.type == Room.Door.Type.UNLOCKED && (r.isEntrance() || n.isEntrance())){
+					if ((Dungeon.depth == 1 && SPDSettings.intro())
 							|| (Dungeon.depth == 2 && !Document.ADVENTURERS_GUIDE.isPageFound(Document.GUIDE_SEARCHING))) {
-							d.type = Room.Door.Type.HIDDEN;
-						}
+						d.type = Room.Door.Type.HIDDEN;
 					}
 				}
-				
+
 				switch (d.type) {
 					case EMPTY:
 						l.map[door] = Terrain.EMPTY;
@@ -442,23 +449,27 @@ public abstract class RegularPainter extends Painter {
 		//no more than one trap every 5 valid tiles.
 		nTraps = Math.min(nTraps, validCells.size()/5);
 
-		//for traps that want to avoid being in hallways
-		ArrayList<Integer> validNonHallways = new ArrayList<>();
+		//for traps that want to avoid being in enclosed spaces
+		ArrayList<Integer> validOpenSpace = new ArrayList<>();
 
 		//temporarily use the passable array for the next step
 		for (int i = 0; i < l.length(); i++){
 			l.passable[i] = (Terrain.flags[l.map[i]] & Terrain.PASSABLE) != 0;
 		}
 
+		//basically an open space calculation
 		for (int i : validCells){
 			if ((l.passable[i+PathFinder.CIRCLE4[0]] || l.passable[i+PathFinder.CIRCLE4[2]])
 					&& (l.passable[i+PathFinder.CIRCLE4[1]] || l.passable[i+PathFinder.CIRCLE4[3]])){
-				validNonHallways.add(i);
+				validOpenSpace.add(i);
 			}
 		}
 
 		//no more than one trap every 5 valid tiles.
 		nTraps = Math.min(nTraps, validCells.size()/5);
+
+		float revealedChance = TrapMechanism.revealHiddenTrapChance();
+		float revealInc = 0;
 
 		//5x traps on traps level feeling, but the extra traps are all visible
 		for (int i = 0; i < (l.feeling == Level.Feeling.TRAPS ? 5*nTraps : nTraps); i++) {
@@ -466,17 +477,27 @@ public abstract class RegularPainter extends Painter {
 			Trap trap = Reflection.newInstance(trapClasses[Random.chances( trapChances )]);
 
 			Integer trapPos;
-			if (trap.avoidsHallways && !validNonHallways.isEmpty()){
-				trapPos = Random.element(validNonHallways);
+			if (trap.avoidsClosedSpaces && !validOpenSpace.isEmpty()){
+				trapPos = Random.element(validOpenSpace);
 			} else {
 				trapPos = Random.element(validCells);
 			}
 			//removes the integer object, not at the index
 			validCells.remove(trapPos);
-			validNonHallways.remove(trapPos);
+			validOpenSpace.remove(trapPos);
 
-			if (i < nTraps) trap.hide();
-			else            trap.reveal();
+			//open space traps cannot be adjacent
+			for (int j = 0; j < PathFinder.CIRCLE4.length; j++) {
+				validOpenSpace.remove((Integer) (trapPos + PathFinder.CIRCLE4[j]));
+			}
+
+			revealInc += revealedChance;
+			if (i >= nTraps || revealInc >= 1) {
+				trap.reveal();
+				revealInc--;
+			} else {
+				trap.hide();
+			}
 
 			l.setTrap( trap, trapPos );
 			//some traps will not be hidden

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,25 +30,26 @@ public class RingOfHaste extends Ring {
 
 	{
 		icon = ItemSpriteSheet.Icons.RING_HASTE;
+		buffClass = Haste.class;
 	}
 
 	public String statsInfo() {
 		if (isIdentified()){
 			String info = Messages.get(this, "stats",
-					Messages.decimalFormat("#.##", 100f * (Math.pow(1.175f, soloBuffedBonus()) - 1f)));
+					Messages.decimalFormat("#.##", 100f * (Math.pow(1.15f, soloBuffedBonus()) - 1f)));
 			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
 				info += "\n\n" + Messages.get(this, "combined_stats",
-						Messages.decimalFormat("#.##", 100f * (Math.pow(1.175f, combinedBuffedBonus(Dungeon.hero)) - 1f)));
+						Messages.decimalFormat("#.##", 100f * (Math.pow(1.15f, combinedBuffedBonus(Dungeon.hero)) - 1f)));
 			}
 			return info;
 		} else {
-			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 17.5f));
+			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 15f));
 		}
 	}
 
 	public String upgradeStat1(int level){
 		if (cursed && cursedKnown) level = Math.min(-1, level-3);
-		return Messages.decimalFormat("#.##", 100f * (Math.pow(1.175f, level+1)-1f)) + "%";
+		return Messages.decimalFormat("#.##", 100f * (Math.pow(1.15f, level+1)-1f)) + "%";
 	}
 	
 	@Override
@@ -57,7 +58,7 @@ public class RingOfHaste extends Ring {
 	}
 	
 	public static float speedMultiplier( Char target ){
-		return (float)Math.pow(1.175, getBuffedBonus(target, Haste.class));
+		return (float)Math.pow(1.15, getBuffedBonus(target, Haste.class));
 	}
 	
 	public class Haste extends RingBuff {

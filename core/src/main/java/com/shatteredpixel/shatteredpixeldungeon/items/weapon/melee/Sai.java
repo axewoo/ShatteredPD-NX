@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Combo;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Corruption;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -62,14 +63,14 @@ public class Sai extends MeleeWeapon {
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		//+(3+0.67*lvl) damage, roughly +45% base damage, +45% scaling
-		int dmgBoost = augment.damageFactor(3 + Math.round(0.67f*buffedLvl()));
+		//+(4+lvl) damage, roughly +60% base damage, +67% scaling
+		int dmgBoost = augment.damageFactor(4 + buffedLvl());
 		Sai.comboStrikeAbility(hero, target, 0, dmgBoost, this);
 	}
 
 	@Override
 	public String abilityInfo() {
-		int dmgBoost = levelKnown ? 3 + Math.round(0.67f*buffedLvl()) : 3;
+		int dmgBoost = levelKnown ? 4 + buffedLvl() : 4;
 		if (levelKnown){
 			return Messages.get(this, "ability_desc", augment.damageFactor(dmgBoost));
 		} else {
@@ -78,7 +79,7 @@ public class Sai extends MeleeWeapon {
 	}
 
 	public String upgradeAbilityStat(int level){
-		return "+" + augment.damageFactor(3 + Math.round(0.67f*level));
+		return "+" + augment.damageFactor(4 + level);
 	}
 
 	public static void comboStrikeAbility(Hero hero, Integer target, float multiPerHit, int boostPerHit, MeleeWeapon wep){
@@ -137,6 +138,7 @@ public class Sai extends MeleeWeapon {
 
 		public static int DURATION = 5;
 		private float comboTime = 0f;
+		private float initialTime = 5f;
 		public int hits = 0;
 
 		@Override
@@ -163,9 +165,17 @@ public class Sai extends MeleeWeapon {
 			return true;
 		}
 
-		public void addHit(){
+		public void addHit( Char enemy ){
 			hits++;
-			comboTime = 5f;
+			if (comboTime <= 5f) {
+				comboTime = 5f;
+				initialTime = 5f;
+			}
+
+			if (!enemy.isAlive() || (enemy.buff(Corruption.class) != null && enemy.HP == enemy.HT)){
+				comboTime = 15f;
+				initialTime = 15f;
+			}
 
 			if (hits >= 2 && icon() != BuffIndicator.NONE){
 				GLog.p( Messages.get(Combo.class, "combo", hits) );
@@ -174,7 +184,7 @@ public class Sai extends MeleeWeapon {
 
 		@Override
 		public float iconFadePercent() {
-			return Math.max(0, (DURATION - comboTime)/ DURATION);
+			return Math.max(0, (initialTime - comboTime)/ initialTime);
 		}
 
 		@Override
@@ -188,31 +198,23 @@ public class Sai extends MeleeWeapon {
 		}
 
 		private static final String TIME  = "combo_time";
+		private static final String INITIAL_TIME  = "initial_time";
 		public static String RECENT_HITS = "recent_hits";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(TIME, comboTime);
+			bundle.put(INITIAL_TIME, initialTime);
 			bundle.put(RECENT_HITS, hits);
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			if (bundle.contains(TIME)){
-				comboTime = bundle.getInt(TIME);
-				hits = bundle.getInt(RECENT_HITS);
-			} else {
-				//pre-2.4.0 saves
-				comboTime = 5f;
-				hits = 0;
-				if (bundle.contains(RECENT_HITS)) {
-					for (int i : bundle.getIntArray(RECENT_HITS)) {
-						hits += i;
-					}
-				}
-			}
+			comboTime = bundle.getInt(TIME);
+			initialTime = bundle.getInt(INITIAL_TIME);
+			hits = bundle.getInt(RECENT_HITS);
 		}
 	}
 

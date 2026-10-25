@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.GameMath;
@@ -189,10 +190,10 @@ public class YogDzewa extends Mob {
 			return true;
 		} else {
 
-			boolean terrainAffected = false;
-			HashSet<Char> affected = new HashSet<>();
 			//delay fire on a rooted hero
-			if (!Dungeon.hero.rooted) {
+			if (!targetedCells.isEmpty() && !Dungeon.hero.rooted) {
+				boolean terrainAffected = false;
+				HashSet<Char> affected = new HashSet<>();
 				for (int i : targetedCells) {
 					Ballistica b = new Ballistica(pos, i, Ballistica.WONT_STOP);
 					//shoot beams
@@ -209,6 +210,7 @@ public class YogDzewa extends Mob {
 						}
 					}
 				}
+				Sample.INSTANCE.play( Assets.Sounds.RAY );
 				if (terrainAffected) {
 					Dungeon.observe();
 				}
@@ -270,16 +272,19 @@ public class YogDzewa extends Mob {
 				if (allAdjTargeted){
 					targetedCells.remove(targetedCells.size()-1);
 				}
+
+				//don't want to overly punish players with slow move or attack speed
+				float delay = GameMath.gate(TICK, (int)Math.ceil(Dungeon.hero.cooldown()), 3*TICK);
+
 				for (int i : targetedCells){
 					Ballistica b = new Ballistica(pos, i, Ballistica.WONT_STOP);
 					for (int p : b.path){
-						sprite.parent.add(new TargetedCell(p, 0xFF0000));
+						GameScene.targetedCell(p, delay);
 						affectedCells.add(p);
 					}
 				}
 
-				//don't want to overly punish players with slow move or attack speed
-				spend(GameMath.gate(TICK, (int)Math.ceil(Dungeon.hero.cooldown()), 3*TICK));
+				spend( delay );
 				Dungeon.hero.interrupt();
 
 				abilityCooldown += Random.NormalFloat(MIN_ABILITY_CD, MAX_ABILITY_CD);
@@ -503,10 +508,12 @@ public class YogDzewa extends Mob {
 
 	@Override
 	public void aggro(Char ch) {
-		for (Mob mob : (Iterable<Mob>)Dungeon.level.mobs.clone()) {
-			if (mob != ch && Dungeon.level.distance(pos, mob.pos) <= 4 &&
-					(mob instanceof Larva || mob instanceof YogRipper || mob instanceof YogEye || mob instanceof YogScorpio)) {
-				mob.aggro(ch);
+		if (ch != null && ch.alignment != alignment || !(ch instanceof Larva || ch instanceof YogRipper || ch instanceof YogEye || ch instanceof YogScorpio)) {
+			for (Mob mob : (Iterable<Mob>) Dungeon.level.mobs.clone()) {
+				if (mob != ch && Dungeon.level.distance(pos, mob.pos) <= 4 && mob.alignment == alignment &&
+						(mob instanceof Larva || mob instanceof YogRipper || mob instanceof YogEye || mob instanceof YogScorpio)) {
+					mob.aggro(ch);
+				}
 			}
 		}
 	}
@@ -533,6 +540,8 @@ public class YogDzewa extends Mob {
 			Statistics.qualifiedForBossChallengeBadge = false;
 		}
 		Statistics.bossScores[4] += 5000 + 1250*Statistics.spawnersAlive;
+
+		Badges.validateTakingTheMick(cause);
 
 		Dungeon.level.unseal();
 		super.die( cause );

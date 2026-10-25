@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,14 +46,14 @@ public class Grim extends Weapon.Enchantment {
 		float maxChance = 0.5f + .05f*level;
 		maxChance *= procChanceMultiplier(attacker);
 
-		//we defer logic using an actor here so we can know the true final damage
+		//we defer logic using a buff here so we can know the true final damage
 		//see Char.damage
-		Buff.affect(defender, GrimTracker.class).maxChance = maxChance;
+		Buff.affect(attacker, GrimTracker.class).maxChance = maxChance;
 
-		if (defender.buff(GrimTracker.class) != null
+		if (attacker.buff(GrimTracker.class) != null
 				&& attacker instanceof Hero
 				&& weapon.hasEnchant(Grim.class, attacker)){
-			defender.buff(GrimTracker.class).qualifiesForBadge = true;
+			attacker.buff(GrimTracker.class).qualifiesForBadge = true;
 		}
 
 		return damage;

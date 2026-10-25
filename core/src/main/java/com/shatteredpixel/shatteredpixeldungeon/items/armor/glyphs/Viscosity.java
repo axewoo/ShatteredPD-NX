@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,7 @@ public class Viscosity extends Glyph {
 
 			if (amount > 0){
 				DeferedDamage deferred = Buff.affect( target, DeferedDamage.class );
-				deferred.prolong( amount );
+				deferred.extend( amount );
 
 				target.sprite.showStatus( CharSprite.WARNING, Messages.get(Viscosity.class, "deferred", amount) );
 			}
@@ -100,7 +100,7 @@ public class Viscosity extends Glyph {
 		}
 	};
 	
-	public static class DeferedDamage extends Buff {
+	public static class DeferedDamage extends Buff implements Buff.DOTbuff {
 		
 		{
 			type = buffType.NEGATIVE;
@@ -123,12 +123,13 @@ public class Viscosity extends Glyph {
 			damage = bundle.getInt( DAMAGE );
 		}
 		
-		public void prolong( int damage ) {
+		public void extend( float damage ) {
 			if (this.damage == 0){
 				//wait 1 turn before damaging if this is freshly applied
 				postpone(TICK);
 			}
 			this.damage += damage;
+			if (target != null) target.needsIncomingDOTUpdate = true;
 		}
 		
 		@Override
@@ -166,13 +167,25 @@ public class Viscosity extends Glyph {
 				detach();
 				
 			}
-			
+
+			target.needsIncomingDOTUpdate = true;
 			return true;
+		}
+
+		@Override
+		public void detach() {
+			target.needsIncomingDOTUpdate = true;
+			super.detach();
 		}
 
 		@Override
 		public String desc() {
 			return Messages.get(this, "desc", damage);
+		}
+
+		@Override
+		public int totalIncomingDMG() {
+			return damage;
 		}
 	}
 }

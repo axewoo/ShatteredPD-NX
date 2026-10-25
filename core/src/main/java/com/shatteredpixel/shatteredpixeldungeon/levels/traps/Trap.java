@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,11 @@ package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Bestiary;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndInfoTrap;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -65,7 +67,8 @@ public abstract class Trap implements Bundlable {
 	public boolean canBeHidden = true;
 	public boolean canBeSearched = true;
 
-	public boolean avoidsHallways = false; //whether this trap should avoid being placed in hallways
+	//whether this trap should avoid being placed in enclosed areas like hallways
+	public boolean avoidsClosedSpaces = false;
 
 	public Trap set(int pos){
 		this.pos = pos;
@@ -120,7 +123,12 @@ public abstract class Trap implements Bundlable {
 	}
 
 	public String desc() {
-		return Messages.get(this, "desc");
+		String desc = "";
+		if (!active){
+			desc += Messages.get(WndInfoTrap.class, "inactive") + "\n\n";
+		}
+		desc += Messages.get(this, "desc");
+		return desc;
 	}
 
 	private static final String POS	= "pos";
@@ -141,5 +149,10 @@ public abstract class Trap implements Bundlable {
 		bundle.put( POS, pos );
 		bundle.put( VISIBLE, visible );
 		bundle.put( ACTIVE, active );
+	}
+
+	//this buff is used to keep track of hazards recently affecting a character
+	public static class HazardAssistTracker extends FlavourBuff{
+		public static final float DURATION = 50f;
 	}
 }

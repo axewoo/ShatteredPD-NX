@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2024 Evan Debenham
+ * Copyright (C) 2014-2026 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,6 +52,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
 
@@ -60,7 +61,6 @@ import java.util.ArrayList;
 public class InventoryPane extends Component {
 
 	private NinePatch bg;
-	private NinePatch bg2; //2 backgrounds to reduce transparency
 
 	//used to prevent clicks through the BG normally, or to cancel selectors if they're enabled
 	private PointerArea blocker;
@@ -114,11 +114,8 @@ public class InventoryPane extends Component {
 	@Override
 	protected void createChildren() {
 
-		bg = Chrome.get(Chrome.Type.TOAST_TR);
+		bg = Chrome.get(Chrome.Type.TOAST_TR_HEAVY);
 		add(bg);
-
-		bg2 = Chrome.get(Chrome.Type.TOAST_TR);
-		add(bg2);
 
 		blocker = new PointerArea(0, 0, PixelScene.uiCamera.width, PixelScene.uiCamera.height){
 			@Override
@@ -211,10 +208,9 @@ public class InventoryPane extends Component {
 		width = WIDTH;
 		height = HEIGHT;
 
-		bg.x = bg2.x = x;
-		bg.y = bg2.y = y;
+		bg.x = x;
+		bg.y = y;
 		bg.size(width, height);
-		bg2.size(width, height);
 
 		float left = x+4;
 		for (InventorySlot i : equipped){
@@ -264,7 +260,6 @@ public class InventoryPane extends Component {
 	
 	public void alpha( float value ){
 		bg.alpha( value );
-		bg2.alpha( value );
 		
 		for (InventorySlot slot : equipped){
 			slot.alpha( value );
@@ -396,6 +391,10 @@ public class InventoryPane extends Component {
 			else                    lastBag = Dungeon.hero.belongings.backpack;
 		}
 		updateInventory();
+	}
+
+	public WndBag.ItemSelector getSelector() {
+		return selector;
 	}
 
 	public boolean isSelecting(){
@@ -564,6 +563,7 @@ public class InventoryPane extends Component {
 			}
 
 			if (selector == null && item.defaultAction() != null){
+				GameScene.centerNextWndOnInvPane();
 				item.execute(Dungeon.hero);
 				if (item != null && item.usesTargeting) {
 					targetingSlot = this;
@@ -598,6 +598,8 @@ public class InventoryPane extends Component {
 				PointF mousePos = PointerEvent.currentHoverPos();
 				mousePos = camera.screenToCamera((int)mousePos.x, (int)mousePos.y);
 				r.setPos(mousePos.x-3, mousePos.y-3);
+				r.setChildWindowOffset(new Point((int)centerX() - camera().width/2,
+						(int)centerY() - camera().height/2));
 			} else {
 				//do nothing
 			}
